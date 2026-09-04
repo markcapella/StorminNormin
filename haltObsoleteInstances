@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Color styling.
+TEXT_BOLD=$(tput bold)
+
+COLOR_BLACK=$(tput setaf 0)
+COLOR_RED=$(tput setaf 1)
+COLOR_GREEN=$(tput setaf 2)
+COLOR_YELLOW=$(tput setaf 3)
+COLOR_BLUE=$(tput setaf 4)
+COLOR_MAGENTA=$(tput setaf 5)
+COLOR_CYAN=$(tput setaf 6)
+COLOR_WHITE=$(tput setaf 7)
+
+ALLTEXT_NORMAL=$(tput sgr0)
+
+# Sanity check the request.
+APP_NAME=$1
+if [ "$APP_NAME" == "" ]; then
+    echo -e "$COLOR_RED""$TEXT_BOLD""!! Error,"\
+        "$ALLTEXT_NORMAL""No App name specified to be halted."
+    exit 1
+fi
+
+##
+# Kill all active X11 Windows with app as Title.
+#
+WERE_WINDOWS_CLOSED="false"
+
+OLDIFS=$IFS; IFS=$'\n';
+for PROC_INFO in $(wmctrl -l | grep -E \
+    "[[:space:]]${APP_NAME}( (one|two|three|four|five|six|seven|eight))?$")
+do
+    PROC_ID=${PROC_INFO:0:10}
+    if [[ "$PROC_ID" != "" ]]; then
+        echo -e "$COLOR_YELLOW""$TEXT_BOLD""-- Warning,"\
+            "$ALLTEXT_NORMAL""$APP_NAME"" window is being closed."
+        xkill -id ""$PROC_ID"" 1>/dev/null 2>/dev/null
+        WERE_WINDOWS_CLOSED="true"
+    fi
+done
+IFS=$OLDIFS
+
+if [ "$WERE_WINDOWS_CLOSED" == "false" ]; then
+    echo "-- No ""$APP_NAME"" windows were closed."
+fi
+
+##
+# Kill all active app procs.
+#
+WERE_PROCS_SHUTDOWN="false"
+
+PROC_COUNT=$(pgrep -xc $APP_NAME)
+if [ "$PROC_COUNT" != "0" ]; then
+    echo -e "$COLOR_YELLOW""$TEXT_BOLD""-- Warning,"\
+        "$ALLTEXT_NORMAL""$APP_NAME"" proc is being shutdown."
+    pkill -x $APP_NAME
+    WERE_PROCS_SHUTDOWN="true"
+fi
+
+if [ "$WERE_PROCS_SHUTDOWN" == "false" ]; then
+    echo "-- No ""$APP_NAME"" proc was shutdown."
+fi
