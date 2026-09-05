@@ -43,12 +43,12 @@ class Canvas {
         /**
          * Init method for Vulkan graphics tools.
          */
-        bool initVulcanCanvas();
+        bool initCanvas();
 
         /**
          * Uninit method for Vulkan graphics tools.
          */
-        void uninitVulcanCanvas();
+        void uninitCanvas();
 
         /**
          * Draw the canvas and all storm items.
@@ -60,17 +60,17 @@ class Canvas {
         /**
          * Init StorminNormin canvas & its storm items array.
          */
-        void initStormCanvas();
+        void initStormItems();
 
         /**
          * Uninit StorminNormin canvas.
          */
-        void uninitStormCanvas();
+        void uninitStormItems();
 
         /**
          * Update each storm items position, etc during the storm.
          */
-        void updateStormCanvasItem(int index, bool randomY = false);
+        void updateStormItem(int index, bool randomY = false);
 
         /**
           * Routinely starts a new wind gust strength.

@@ -39,22 +39,39 @@ ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
     mMainLayout = new QVBoxLayout(this);
     mMainLayout->addWidget(scrollArea);
 
-    // Create Buttons Layout.
-    QHBoxLayout* mButtonLayout = new QHBoxLayout();
-
     // Create all buttons for the layout.
+    mResetButton = new QPushButton(I18N("Reset"), this);
     mAboutButton = new QPushButton(I18N("About"), this);
     mOkButton = new QPushButton(I18N("Ok"), this);
     mApplyButton = new QPushButton(I18N("Apply"), this);
     mCancelButton = new QPushButton(I18N("Cancel"), this);
 
     // Ensure nothing defaults to having focus.
+    mResetButton->setAutoDefault(false);
     mAboutButton->setAutoDefault(false);
     mOkButton->setAutoDefault(false);
     mApplyButton->setAutoDefault(false);
     mCancelButton->setAutoDefault(false);
 
-    // Add all buttons to the layout.
+    const bool SHOULD_DISPLAY_ICONS = mSettingsHelper->
+        getBoolSetting(SettingsHelper::SHOW_ICONS_ON_BUTTONS);
+    if (SHOULD_DISPLAY_ICONS) {
+        mResetButton->setIcon(QIcon::fromTheme("edit-undo"));
+        mAboutButton->setIcon(QIcon::fromTheme("help-about"));
+        mOkButton->setIcon(QIcon::fromTheme("dialog-ok"));
+        mApplyButton->setIcon(QIcon::fromTheme("dialog-ok-apply"));
+        mCancelButton->setIcon(QIcon::fromTheme("dialog-cancel"));
+    } else {
+        mResetButton->setIcon(QIcon());
+        mAboutButton->setIcon(QIcon());
+        mOkButton->setIcon(QIcon());
+        mApplyButton->setIcon(QIcon());
+        mCancelButton->setIcon(QIcon());
+    }
+
+    // Create Buttons Layout, add all buttons.
+    mButtonLayout = new QHBoxLayout();
+    mButtonLayout->addWidget(mResetButton);
     mButtonLayout->addWidget(mAboutButton);
     mButtonLayout->addStretch();
     mButtonLayout->addWidget(mOkButton);
@@ -66,8 +83,11 @@ ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
     setLayout(mMainLayout);
 
     // Connect all button click signals.
+    connect(mResetButton, &QPushButton::clicked, this,
+        &ConfigDialog::loadConfigDialogWithDefaults);
     connect(mAboutButton, &QPushButton::clicked, this,
         &ConfigDialog::showAboutDialog);
+
     connect(mOkButton, &QPushButton::clicked, this,
         &ConfigDialog::okConfigDialog);
     connect(mApplyButton, &QPushButton::clicked, this,
@@ -96,6 +116,7 @@ ConfigDialog::translateConfigDialog() {
     setWindowTitle(QString(TITLE));
 
     const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
+
     for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
             SettingsHelper::PROPERTIES[i];
@@ -120,11 +141,13 @@ ConfigDialog::translateConfigDialog() {
         }
     }
 
+    mResetButton->setText(I18N("Reset"));
     mAboutButton->setText(I18N("About"));
     mOkButton->setText(I18N("Ok"));
     mApplyButton->setText(I18N("Apply"));
     mCancelButton->setText(I18N("Cancel"));
 
+    mResetButton->clearFocus();
     mAboutButton->clearFocus();
     mOkButton->clearFocus();
     mApplyButton->clearFocus();
@@ -136,8 +159,8 @@ ConfigDialog::translateConfigDialog() {
  */
 void
 ConfigDialog::loadConfigDialog() {
-
     const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
+
     for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
             SettingsHelper::PROPERTIES[i];
@@ -148,32 +171,6 @@ ConfigDialog::loadConfigDialog() {
 
         // Ignore Divider lines.
         if (THIS_VALUETYPE == DIVIDER_VALUETYPE) {
-            continue;
-        }
-
-        // Get QLineEdit for Strings.
-        if (THIS_VALUETYPE == STRING_VALUETYPE) {
-            QLineEdit* stringEditWidget = nullptr;
-            stringEditWidget = qobject_cast<QLineEdit*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
-            if (stringEditWidget) {
-                const QString VALUE = mSettingsHelper->getQSettings()->
-                    value(THIS_KEY, THIS_DEFAULT_VALUE).toString();
-                stringEditWidget->setText(VALUE);
-            }
-            continue;
-        }
-
-        // Get QlineEdit for Ints.
-        if (THIS_VALUETYPE == INT_VALUETYPE) {
-            QLineEdit* lineEditWidget = nullptr;
-            lineEditWidget = qobject_cast<QLineEdit*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
-            if (lineEditWidget) {
-                const int VALUE = mSettingsHelper->getQSettings()->
-                    value(THIS_KEY, THIS_DEFAULT_VALUE).toInt();
-                lineEditWidget->setText(QString::number(VALUE));
-            }
             continue;
         }
 
@@ -191,20 +188,7 @@ ConfigDialog::loadConfigDialog() {
             continue;
         }
 
-        // Get QColorButton for Colors.
-        if (THIS_VALUETYPE == COLOR_VALUETYPE) {
-            ColorButton* colorButtonWidget = nullptr;
-            colorButtonWidget = qobject_cast<ColorButton*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
-            if (colorButtonWidget) {
-                const QString VALUE = mSettingsHelper->getQSettings()->
-                    value(THIS_KEY, THIS_DEFAULT_VALUE).toString();
-                colorButtonWidget->setButtonColor(QColor(VALUE));
-            }
-            continue;
-        }
-
-        // Get QSlider for preferredDesktop.
+        // Get QSlider for Sliders.
         if (THIS_VALUETYPE == SLIDER_VALUETYPE) {
             QSlider* sliderEditWidget = nullptr;
             sliderEditWidget = qobject_cast<QSlider*>(mFormLayout->
@@ -214,9 +198,22 @@ ConfigDialog::loadConfigDialog() {
                     getSettingsIntRangeMinimum(THIS_KEY));
                 sliderEditWidget->setMaximum(mSettingsHelper->
                     getSettingsIntRangeMaximum(THIS_KEY));
-                    const int VALUE = mSettingsHelper->getIntSetting(
+                const int VALUE = mSettingsHelper->getIntSetting(
                         THIS_KEY);
-                    sliderEditWidget->setSliderPosition(VALUE);
+                sliderEditWidget->setSliderPosition(VALUE);
+            }
+            continue;
+        }
+
+        // Get QColorButton for Colors.
+        if (THIS_VALUETYPE == COLOR_VALUETYPE) {
+            ColorButton* colorButtonWidget = nullptr;
+            colorButtonWidget = qobject_cast<ColorButton*>(mFormLayout->
+                itemAt(i, QFormLayout::FieldRole)->widget());
+            if (colorButtonWidget) {
+                const QString VALUE = mSettingsHelper->getQSettings()->
+                    value(THIS_KEY, THIS_DEFAULT_VALUE).toString();
+                colorButtonWidget->setButtonColor(QColor(VALUE));
             }
             continue;
         }
@@ -243,12 +240,88 @@ ConfigDialog::loadConfigDialog() {
 }
 
 /**
+ * Load dialog with DEFAULT settings values.
+ */
+void
+ConfigDialog::loadConfigDialogWithDefaults() {
+    const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
+
+    for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
+        const SettingsHelper::SettingsProperty THIS_SETTING =
+            SettingsHelper::PROPERTIES[i];
+        const QString THIS_KEY = THIS_SETTING.name;
+        const SettingsPropertyType THIS_VALUETYPE =
+            THIS_SETTING.valueType;
+        const QString THIS_DEFAULT_VALUE = THIS_SETTING.initialValue;
+
+        // Ignore Divider lines.
+        if (THIS_VALUETYPE == DIVIDER_VALUETYPE) {
+            continue;
+        }
+
+        // Get QCheckBox for Booleans.
+        if (THIS_VALUETYPE == BOOL_VALUETYPE) {
+            QCheckBox* checkboxWidget = nullptr;
+            checkboxWidget = qobject_cast<QCheckBox*>(mFormLayout->
+                itemAt(i, QFormLayout::FieldRole)->widget());
+            if (checkboxWidget) {
+                checkboxWidget->setCheckState(
+                    THIS_DEFAULT_VALUE == "true" ?
+                        Qt::Checked : Qt::Unchecked);
+            }
+            continue;
+        }
+
+        // Get QSliders.
+        if (THIS_VALUETYPE == SLIDER_VALUETYPE) {
+            QSlider* sliderEditWidget = nullptr;
+            sliderEditWidget = qobject_cast<QSlider*>(mFormLayout->
+                itemAt(i, QFormLayout::FieldRole)->widget());
+            if (sliderEditWidget) {
+                sliderEditWidget->setSliderPosition(
+                    THIS_DEFAULT_VALUE.toInt());
+            }
+            continue;
+        }
+
+        // Get QColorButton for Colors.
+        if (THIS_VALUETYPE == COLOR_VALUETYPE) {
+            ColorButton* colorButtonWidget = nullptr;
+            colorButtonWidget = qobject_cast<ColorButton*>(mFormLayout->
+                itemAt(i, QFormLayout::FieldRole)->widget());
+            if (colorButtonWidget) {
+                colorButtonWidget->setButtonColor(
+                    QColor(THIS_DEFAULT_VALUE));
+            }
+            continue;
+        }
+
+        // Get QComboBox for Language.
+        if (THIS_VALUETYPE == COMBOBOX_VALUETYPE &&
+            THIS_KEY == SettingsHelper::APP_LANGUAGE) {
+            QComboBox* langComboWidget = nullptr;
+            langComboWidget = qobject_cast<QComboBox*>(mFormLayout->
+                itemAt(i, QFormLayout::FieldRole)->widget());
+            if (langComboWidget) {
+                const int LANG_INDEX = ALL_LANGUAGES.indexOf(
+                    THIS_DEFAULT_VALUE);
+                langComboWidget->setCurrentIndex(LANG_INDEX);
+            }
+            continue;
+        }
+    }
+
+    mSettingChanges.fill(true);
+    mApplyButton->setEnabled(true);
+}
+
+/**
  * Update any runtime dialog controls, range settings, etc.
  */
 void
 ConfigDialog::updateConfigDialog() {
-
     const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
+
     for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
             SettingsHelper::PROPERTIES[i];
@@ -300,6 +373,7 @@ ConfigDialog::createConfigDialog() {
     mFormLayout->setVerticalSpacing(FORM_LAYOUT_ROW_SPACING);
 
     const int SETTINGS_SIZE = SettingsHelper::PROPERTIES.size();
+
     for (int i = 0; i < SETTINGS_SIZE; i++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
             SettingsHelper::PROPERTIES[i];
@@ -315,34 +389,6 @@ ConfigDialog::createConfigDialog() {
                 getIntSetting(THIS_KEY);
             dividerWidget->setFixedHeight(SLIDER_HEIGHT_VALUE);
             mFormLayout->addRow("", dividerWidget);
-            continue;
-        }
-
-        // Get QLineEdit for Strings.
-        if (THIS_VALUETYPE == STRING_VALUETYPE) {
-            QLineEdit* stringEditWidget = new QLineEdit(this);
-            stringEditWidget->setObjectName(THIS_KEY);
-            stringEditWidget->setFixedWidth(360);
-            mFormLayout->addRow(I18N_DISPLAY_KEY, stringEditWidget);
-            connect(stringEditWidget, &QLineEdit::textChanged,
-                this, [this, i] (const QString &text) {
-                mSettingChanges[i] = true;
-                mApplyButton->setEnabled(true);
-            });
-            continue;
-        }
-
-        // Get QlineEdit for Ints.
-        if (THIS_VALUETYPE == INT_VALUETYPE) {
-            QLineEdit* lineEditWidget = new QLineEdit(this);
-            lineEditWidget->setObjectName(THIS_KEY);
-            lineEditWidget->setFixedWidth(120);
-            mFormLayout->addRow(I18N_DISPLAY_KEY, lineEditWidget);
-            connect(lineEditWidget, &QLineEdit::textChanged,
-                this, [this, i] (const QString &text) {
-                mSettingChanges[i] = true;
-                mApplyButton->setEnabled(true);
-            });
             continue;
         }
 
@@ -508,6 +554,7 @@ ConfigDialog::acceptConfigDialog() {
     }
 
     const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
+
     for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
             SettingsHelper::PROPERTIES[i];
@@ -517,32 +564,6 @@ ConfigDialog::acceptConfigDialog() {
 
         // Ignore Divider lines.
         if (THIS_VALUETYPE == DIVIDER_VALUETYPE) {
-            continue;
-        }
-
-        // Get QLineEdit for Strings.
-        if (THIS_VALUETYPE == STRING_VALUETYPE) {
-            QLineEdit* stringEditWidget = nullptr;
-            stringEditWidget = qobject_cast<QLineEdit*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
-            if (stringEditWidget) {
-                const QString VALUE = stringEditWidget->text();
-                mSettingsHelper->getQSettings()->
-                    setValue(THIS_KEY, VALUE);
-            }
-            continue;
-        }
-
-        // Get QlineEdit for Ints.
-        if (THIS_VALUETYPE == INT_VALUETYPE) {
-            QLineEdit* lineEditWidget = nullptr;
-            lineEditWidget = qobject_cast<QLineEdit*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
-            if (lineEditWidget) {
-                const int VALUE = lineEditWidget->text().toInt();
-                mSettingsHelper->getQSettings()->
-                    setValue(THIS_KEY, VALUE);
-            }
             continue;
         }
 
@@ -620,6 +641,23 @@ ConfigDialog::acceptConfigDialog() {
 
     // Translate controls to new lang for next time.
     translateConfigDialog();
+
+    // Myabe reset icon images.
+    const bool SHOULD_DISPLAY_ICONS = mSettingsHelper->
+        getBoolSetting(SettingsHelper::SHOW_ICONS_ON_BUTTONS);
+    if (SHOULD_DISPLAY_ICONS) {
+        mResetButton->setIcon(QIcon::fromTheme("edit-undo"));
+        mAboutButton->setIcon(QIcon::fromTheme("help-about"));
+        mOkButton->setIcon(QIcon::fromTheme("dialog-ok"));
+        mApplyButton->setIcon(QIcon::fromTheme("dialog-ok-apply"));
+        mCancelButton->setIcon(QIcon::fromTheme("dialog-cancel"));
+    } else {
+        mResetButton->setIcon(QIcon());
+        mAboutButton->setIcon(QIcon());
+        mOkButton->setIcon(QIcon());
+        mApplyButton->setIcon(QIcon());
+        mCancelButton->setIcon(QIcon());
+    }
 
     // Done.
     mSettingChanges.fill(false);

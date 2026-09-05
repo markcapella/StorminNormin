@@ -41,7 +41,7 @@ StickyWindow::StickyWindow() {
 StickyWindow::~StickyWindow() {
     lock_guard<recursive_mutex> lock(mButtonsMutLock);
 
-    mCanvas->uninitVulcanCanvas();
+    mCanvas->uninitCanvas();
     delete mCanvas;
 
     const int BUTTONS_SIZE = mButtons.size();
@@ -77,11 +77,6 @@ StickyWindow::show() {
  */
 void
 StickyWindow::draw() {
-    const XRenderPictFormat* RENDER_FORMAT =
-        XRenderFindVisualFormat(mDisplay, mVisualInfoStruct.visual);
-    Picture renderPic = XRenderCreatePicture(mDisplay, mX11Window,
-        RENDER_FORMAT, 0, nullptr);
-
     // If drawing on wrong desktop, erase instead.
     const int VISIBLE_DESKTOP = mXHelper->getVisibleDesktop();
     const int PREFERRED_DESKTOP = mSettingsHelper->
@@ -94,6 +89,10 @@ StickyWindow::draw() {
 
     // Draw rubberband instead of canvas while resizing.
     if (mIsSizingWindow) {
+        const XRenderPictFormat* RENDER_FORMAT =
+            XRenderFindVisualFormat(mDisplay, mVisualInfoStruct.visual);
+        Picture renderPic = XRenderCreatePicture(mDisplay, mX11Window,
+            RENDER_FORMAT, 0, nullptr);
         const int RUBBERBAND_OPACITY = 255;
         const XRenderColor RUBBERBAND_COLOR = newRenderColor(
             BLACK_RCOLOR.red, BLACK_RCOLOR.green,
@@ -110,16 +109,19 @@ StickyWindow::draw() {
         XRenderFillRectangle(mDisplay, PictOpSrc, renderPic,
             &RUBBERBAND_BACKGROUND_COLOR, 1, 1, mSettingsHelper->
             getWindowWidth() - 2, mSettingsHelper->getWindowHeight() - 2);
-
-    } else {
-        // Else, draw Canvas.
-        if (!mCanvas->initVulcanCanvas()) {
-            mCanvasError = true;
-        }
-        drawAllWindowButtons();
+        XRenderFreePicture(mDisplay, renderPic);
+            XFlush(mDisplay);
+        return;
     }
 
-    XRenderFreePicture(mDisplay, renderPic);
+    // Ensure canvas is initialized.
+    if (!mCanvas->initCanvas()) {
+        mCanvasError = true;
+        return;
+    }
+
+    // Draw window layer buttons on canvas.
+    drawAllWindowButtons();
     XFlush(mDisplay);
 }
 
@@ -192,21 +194,20 @@ StickyWindow::run() {
             break;
         }
 
-        // Process xEvents, close when requested.
+        // Handle X11 events. Close when requested.
         if (handleX11EventQueue()) {
-            mCanvas->uninitVulcanCanvas();
+            mCanvas->uninitCanvas();
             break;
         }
 
-        // Reset control buttons hover visibility.
-        makeAnyHoveredControlButtonVisible(false);
+        // Set any hovered control visible.
+        makeAnyHoveredControlButtonVisible(true);
 
-        // Support ConfigDialog loop.
+        // Handle Qt6 events.
         QCoreApplication::processEvents();
 
-        if (!mIsSizingWindow) {
-            mCanvas->drawCanvas();
-        }
+        // Draw vulkan, then window layer canvas.
+        mCanvas->drawCanvas();
         draw();
     }
 }
@@ -834,8 +835,11 @@ StickyWindow::handleX11EventQueue() {
 
             // Type = 22; ConfigureNotify.
             case ConfigureNotify:
-                XTranslateCoordinates(mDisplay, event.xconfigure.window,
-                    RootWindow(mDisplay, DefaultScreen(mDisplay)), 0, 0,
+                if (event.xconfigure.window != mX11Window) {
+                    break;
+                }
+                XTranslateCoordinates(mDisplay, mX11Window,
+                    DefaultRootWindow(mDisplay), 0, 0,
                     &mTranslatePosX, &mTranslatePosY, &mTranslateWindow);
                 resize(mTranslatePosX, mTranslatePosY,
                     event.xconfigure.width, event.xconfigure.height);
@@ -917,7 +921,7 @@ StickyWindow::handleX11EventQueue() {
                 if (mIsSizingWindow) {
                     mIsSizingWindow = false;
                     if (mUnClickedWindowSize != mClickedWindowSize) {
-                        mCanvas->uninitVulcanCanvas();
+                        mCanvas->uninitCanvas();
                         eraseWindow();
                         updateAllWindowButtons();
                         defineWindowCanvasPosition();
@@ -986,7 +990,7 @@ StickyWindow::receiveConfigDialogUpdatedEvent(
     rangeCheckPreferredDesktopSetting();
 
     if (canvasNeedsRedraw) {
-        mCanvas->uninitVulcanCanvas();
+        mCanvas->uninitCanvas();
         draw();
     }
 }

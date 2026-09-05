@@ -12,14 +12,14 @@ Canvas::Canvas(Window window) {
  * StorminNormin canvas destructor.
  */
 Canvas::~Canvas() {
-    uninitVulcanCanvas();
+    uninitCanvas();
 }
 
 /**
  * Init method for Vulkan graphics tools.
  */
 bool
-Canvas::initVulcanCanvas() {
+Canvas::initCanvas() {
     if (mInitialized) {
         return true;
     }
@@ -77,7 +77,7 @@ Canvas::initVulcanCanvas() {
             VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create instance! Ensure "
                 "your drivers support Vulkan 1.3" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -92,7 +92,7 @@ Canvas::initVulcanCanvas() {
             nullptr, &mSurface) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create X11 "
                 "Vulkan surface!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -102,7 +102,7 @@ Canvas::initVulcanCanvas() {
         if (deviceCount == 0) {
             cout << XCOLOR_RED << "Failed to find GPUs with "
                 "Vulkan support!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
         vector<VkPhysicalDevice> devices(deviceCount);
@@ -128,7 +128,7 @@ Canvas::initVulcanCanvas() {
         if (mGraphicsQueueFamilyIndex == -1) {
             cout << XCOLOR_RED << "Failed to find a graphics "
                 "queue family!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -166,7 +166,7 @@ Canvas::initVulcanCanvas() {
         if (result != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create logical "
                 "device! Error code: " << result << "." << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -199,7 +199,7 @@ Canvas::initVulcanCanvas() {
             nullptr, &mSwapchain) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
                 "swapchain!\n" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -230,7 +230,7 @@ Canvas::initVulcanCanvas() {
                 &mSwapchainImageViews[i]) != VK_SUCCESS) {
                 cout << XCOLOR_RED << "Failed to create "
                     "swapchain image view " << i << "!" << endl << endl;
-                uninitVulcanCanvas();
+                uninitCanvas();
                 return false;
             }
         }
@@ -251,7 +251,7 @@ Canvas::initVulcanCanvas() {
             nullptr, &mPipelineLayout) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create graphics "
                 "pipeline layout!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -356,7 +356,7 @@ Canvas::initVulcanCanvas() {
             &pipelineInfo, nullptr, &mGraphicsPipeline) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
                 "graphics pipeline!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -371,7 +371,7 @@ Canvas::initVulcanCanvas() {
             &mCommandPool) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
                 "command pool!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -386,7 +386,7 @@ Canvas::initVulcanCanvas() {
             &mCommandBuffer) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to allocate "
                 "command buffer!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
@@ -406,17 +406,17 @@ Canvas::initVulcanCanvas() {
                 &mInFlightFence) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
                 "synchronization objects!" << endl << endl;
-            uninitVulcanCanvas();
+            uninitCanvas();
             return false;
         }
 
         // Custom domain objects.
-        initStormCanvas();
+        initStormItems();
 
     } catch (const exception& e) {
         cout << XCOLOR_RED << "error: " << e.what() << 
             "." << endl << endl;
-        uninitVulcanCanvas();
+        uninitCanvas();
         return false;
     }
 
@@ -428,7 +428,7 @@ Canvas::initVulcanCanvas() {
  * Uninit method for Vulkan graphics tools.
  */
 void
-Canvas::uninitVulcanCanvas() {
+Canvas::uninitCanvas() {
     if (mDevice != VK_NULL_HANDLE) {
         // Wait for GPU work to complete.
         if (mInFlightFence != VK_NULL_HANDLE) {
@@ -493,7 +493,7 @@ Canvas::uninitVulcanCanvas() {
         }
 
         // Free custom sub-system resources.
-        uninitStormCanvas();
+        uninitStormItems();
 
         // Logical Device.
         vkDestroyDevice(mDevice, nullptr);
@@ -521,7 +521,7 @@ void
 Canvas::drawCanvas() {
     // Init on first draw. Careful, it can fail.
     if (!mInitialized) {
-        initVulcanCanvas();
+        initCanvas();
         if (!mInitialized) {
             return;
         }
@@ -557,13 +557,10 @@ Canvas::drawCanvas() {
 
     // Particle Update Loop.
     for (int i = 0; i < mStormItemCount; i++) {
-
         // Per-Flake Wind Variation. Mutate the global wind
         // slightly for this specific flake using its unique
         // mFlakeVariation so no two flakes experience the exact
-        // same wind strength.
-
-        // Varies between 0.7x and 1.3x.
+        // same wind strength. Varies between 0.7x and 1.3x.
         float flakeWindMod = 0.7f + (mFlakeVariation[i] * 0.6f);
         float airVelX = (mCurrentWindX * flakeWindMod) * 60.0f;
 
@@ -622,15 +619,14 @@ Canvas::drawCanvas() {
 
         // Respawn & Edge Wrapping.
         if (mFlakeY[i] - mFlakeRadiusY >= 1.0f) {
-            updateStormCanvasItem(i, false);
+            updateStormItem(i, false);
         }
 
         // Horizontal Screen Wrap.
         if (mFlakeX[i] + mFlakeRadiusX <= -1.0f) {
-            mFlakeX[i] = 1.0f - mFlakeRadiusX;
-        }
-        if (mFlakeX[i] - mFlakeRadiusX >= 1.0f) {
-            mFlakeX[i] = -1.0f + mFlakeRadiusX;
+            mFlakeX[i] = 1.0f + mFlakeRadiusX;
+        } else if (mFlakeX[i] - mFlakeRadiusX >= 1.0f) {
+            mFlakeX[i] = -1.0f - mFlakeRadiusX;
         }
     }
 
@@ -762,7 +758,7 @@ Canvas::drawCanvas() {
  * Init StorminNormin canvas & its storm items array.
  */
 void
-Canvas::initStormCanvas() {
+Canvas::initStormItems() {
     srand(41);
 
     // Setup Wind defaults.
@@ -795,7 +791,7 @@ Canvas::initStormCanvas() {
     mWindSensitivity.resize(mStormItemCount);
 
     for (int i = 0; i < mStormItemCount; i++) {
-        updateStormCanvasItem(i, true);
+        updateStormItem(i, true);
     }
 }
 
@@ -803,7 +799,7 @@ Canvas::initStormCanvas() {
  * Uninit StorminNormin canvas.
  */
 void
-Canvas::uninitStormCanvas() {
+Canvas::uninitStormItems() {
     mFlakeX.clear();
     mFlakeY.clear();
     mSpeedX.clear();
@@ -820,7 +816,7 @@ Canvas::uninitStormCanvas() {
  * Update each storm items position, etc during the storm.
  */
 void
-Canvas::updateStormCanvasItem(int particle, bool randomY) {
+Canvas::updateStormItem(int particle, bool randomY) {
     mFlakeX[particle] = -1.0f + static_cast<float>(rand()) /
         (static_cast<float>(RAND_MAX / 2.0f));
     if (randomY) {

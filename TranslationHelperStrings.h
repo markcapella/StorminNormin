@@ -39,6 +39,12 @@ const QStringList TRANSLATION_SET_1 = {
     "Não é possível encontrar uma imagem de recurso necessária, Erro.",
     "Не удается найти требуемый ресурс изображения, ошибка."
 };
+
+const QStringList RESET_TRANSLATION_SET = {
+    "Reset", "Zurücksetzen", "Restablecer", "Réinitialiser",
+    "Reimposta", "リセット", "Resetten", "Redefinir", "Сброс"
+};
+
 const QStringList TRANSLATION_SET_2 = {
     "About",
     "Über",
@@ -665,6 +671,17 @@ const QStringList TRANSLATION_SET_59 = { "Allow Desktop Overhang",
     "Permitir projeção da área de trabalho", "Разрешить выступ рабочего стола"
 };
 
+const QStringList SHOW_ICONS_ON_BUTTONS_SET = {
+    "Show Icons on Buttons",
+    "Symbole auf Schaltflächen anzeigen",
+    "Mostrar iconos en los botones",
+    "Afficher les icônes sur les boutons",
+    "Mostra icone sui pulsanti",
+    "ボタンにアイコンを表示",
+    "Pictogrammen op knoppen weergeven",
+    "Mostrar ícones nos botões",
+    "Показывать значки на кнопках"
+};
 
 /**
  * One big set of Translation Sets.
@@ -672,6 +689,7 @@ const QStringList TRANSLATION_SET_59 = { "Allow Desktop Overhang",
 const vector<QStringList> ALL_TRANSLATIONS = {
     TRANSLATION_SET_0,
     TRANSLATION_SET_1,
+    RESET_TRANSLATION_SET,
     TRANSLATION_SET_2,
     TRANSLATION_SET_3,
     TRANSLATION_SET_4,
@@ -729,5 +747,6 @@ const vector<QStringList> ALL_TRANSLATIONS = {
     TRANSLATION_SET_56,
     TRANSLATION_SET_57,
     DISPLAY_PIN_ON_HOVER_SET,
-    TRANSLATION_SET_59
+    TRANSLATION_SET_59,
+    SHOW_ICONS_ON_BUTTONS_SET
 };

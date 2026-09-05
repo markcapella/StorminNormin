@@ -205,18 +205,31 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent) {
     mainLayout->addSpacing(20);
 
     // Create Ok / Cancel ButtonBoxBox with a Repo button.
+    const bool SHOULD_DISPLAY_ICONS = mSettingsHelper->
+        getBoolSetting(SettingsHelper::SHOW_ICONS_ON_BUTTONS);
     QDialogButtonBox* buttonBox = new QDialogButtonBox(
         QDialogButtonBox::Ok, this);
 
     QPushButton* okButton = buttonBox->button(QDialogButtonBox::Ok);
     okButton->setText(I18N("Ok"));
+    if (SHOULD_DISPLAY_ICONS) {
+        okButton->setIcon(QIcon::fromTheme("dialog-ok"));
+    } else {
+        okButton->setIcon(QIcon());
+    }
 
     QPushButton* repoButton = new QPushButton(I18N("Repo"));
-    buttonBox->addButton(repoButton, QDialogButtonBox::ActionRole);
+    if (SHOULD_DISPLAY_ICONS) {
+        repoButton->setIcon(QIcon::fromTheme("internet-web-browser"));
+    } else {
+        repoButton->setIcon(QIcon());
+    }
 
     // Connect Ok and Repo signals.
+    buttonBox->addButton(repoButton, QDialogButtonBox::ActionRole);
     connect(buttonBox, &QDialogButtonBox::accepted, this,
         &QDialog::accept);
+
     connect(repoButton, &QPushButton::clicked, this, [this]() {
         QDesktopServices::openUrl(QUrl(SOURCE_REPO));
         this->close();

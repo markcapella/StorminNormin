@@ -31,16 +31,6 @@ class ConfigDialog : public QDialog {
         explicit ConfigDialog(QWidget* parent = nullptr);
 
         /**
-         * Translate Settings to desired language for display.
-         */
-        void translateConfigDialog();
-
-        /**
-         * Load UI form with values from .Ini.
-         */
-        void loadConfigDialog();
-
-        /**
          * Gettters / Setters for window.
          */
         Window getWindow() const {
@@ -50,6 +40,23 @@ class ConfigDialog : public QDialog {
             mWindow = window;
         }
 
+        /**
+         * Translate Settings to desired language for display.
+         */
+        void translateConfigDialog();
+
+        /**
+         * Load UI form with values from .Ini.
+         */
+        void loadConfigDialog();
+
+    private:
+        /**
+         * Load dialog with DEFAULT settings values.
+         */
+        void loadConfigDialogWithDefaults();
+
+    public:
         /**
          * Update any runtime dialog controls, range settings, etc.
          */
@@ -88,11 +95,12 @@ class ConfigDialog : public QDialog {
          */
         Window mWindow = X11_NONE;
 
-        QFormLayout* mFormLayout = nullptr;
         QVBoxLayout* mMainLayout = nullptr;
+        QFormLayout* mFormLayout = nullptr;
 
-        QDialogButtonBox* mConfigButtonBox = nullptr;
+        QHBoxLayout* mButtonLayout = nullptr;
 
+        QPushButton* mResetButton = nullptr;
         QPushButton* mAboutButton = nullptr;
         QPushButton* mOkButton = nullptr;
         QPushButton* mApplyButton = nullptr;

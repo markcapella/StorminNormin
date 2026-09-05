@@ -7,8 +7,6 @@
  */
 enum SettingsPropertyType {
     NONE_VALUETYPE,
-    STRING_VALUETYPE,
-    INT_VALUETYPE,
     BOOL_VALUETYPE,
     COLOR_VALUETYPE,
     SLIDER_VALUETYPE,
@@ -35,25 +33,27 @@ class SettingsHelper {
         IC_QString FROSTEDFLAKES_COLOR_TWO = "Flake Color Two";
         IC_QString FROSTEDFLAKES_COLOR_THREE = "Flake Color Three";
         IC_QString FROSTEDFLAKES_COLOR_FOUR = "Flake Color Four";
+        IC_QString DIVIDER_1 = "divider01";
 
         IC_QString BACKGROUND_COLOR = "Background Color";
         IC_QString BACKGROUND_OPACITY = "Background Opacity";
-        IC_QString DIVIDER_1 = "divider01";
+        IC_QString DIVIDER_2 = "divider02";
 
         IC_QString APP_LANGUAGE = "Language";
-        IC_QString DIVIDER_2 = "divider02";
+        IC_QString DIVIDER_3 = "divider03";
 
         IC_QString ON_TOP_INSTEAD = "Stick to Top";
         IC_QString ALLOW_DESKTOP_DRAG = "Allow Desktop Drag";
         IC_QString PREFERRED_DESKTOP = "Preferred Desktop";
         IC_QString DESKTOP_OVERHANG = "Allow Desktop Overhang";
-        IC_QString DIVIDER_3 = "divider03";
+        IC_QString DIVIDER_4 = "divider04";
 
         IC_QString SHOW_PIN_ON_WINDOW_HOVER = "Show Pin on Window Hover";
         IC_QString AUTOHIDE_CONTROLS = "Auto hide Controls";
         IC_QString AUTOHIDE_DELAY = "Auto hide Delay";
-        IC_QString DIVIDER_4 = "divider04";
+        IC_QString DIVIDER_5 = "divider05";
 
+        IC_QString SHOW_ICONS_ON_BUTTONS = "Show Icons on Buttons";
 
         // Settings property struct.
         struct SettingsProperty {
@@ -188,6 +188,18 @@ class SettingsHelper {
             { .group = GENERAL_GROUP, .name = AUTOHIDE_DELAY,
               .valueType = SLIDER_VALUETYPE, .initialValue = "4",
               .rangeMinimum = 1, .rangeMaximum = 9
+            },
+
+            { .group = GENERAL_GROUP, .name = DIVIDER_5,
+              .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
+              .rangeMinimum = numeric_limits<int>::min(),
+              .rangeMaximum = numeric_limits<int>::max()
+            },
+
+            { .group = GENERAL_GROUP, .name = SHOW_ICONS_ON_BUTTONS,
+              .valueType = BOOL_VALUETYPE, .initialValue = "true",
+              .rangeMinimum = std::numeric_limits<int>::min(),
+              .rangeMaximum = std::numeric_limits<int>::max()
             }
         };
 
