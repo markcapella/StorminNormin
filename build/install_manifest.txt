@@ -1,7 +1,0 @@
-/usr/local/bin/StorminNormin
-/usr/local/share/icons/hicolor/scalable/apps/StorminNormin.png
-/usr/local/share/icons/hicolor/scalable/apps/StorminNormin-pinIn.png
-/usr/local/share/icons/hicolor/scalable/apps/StorminNormin-pinOut.png
-/usr/local/share/applications/StorminNormin.desktop
-/usr/local/share/StorminNormin/shaders/flakeShader.frag.spv
-/usr/local/share/StorminNormin/shaders/flakeShader.vert.spv

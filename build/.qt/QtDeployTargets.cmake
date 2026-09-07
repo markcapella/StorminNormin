@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_StorminNormin_FILE /home/mark/StorminNormin/build/StorminNormin)
-set(__QT_DEPLOY_TARGET_StorminNormin_TYPE EXECUTABLE)
