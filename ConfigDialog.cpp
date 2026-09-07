@@ -1,6 +1,10 @@
 
+// App Headers.
 #include "Global.h"
+#include "SettingsDescriptionHints.h"
+#include "WindStrengthHints.h"
 
+// Qt Headers.
 #include <QStyleFactory>
 
 /**
@@ -377,8 +381,11 @@ ConfigDialog::createConfigDialog() {
     for (int i = 0; i < SETTINGS_SIZE; i++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
             SettingsHelper::PROPERTIES[i];
+
         const QString THIS_KEY = THIS_SETTING.name;
-        const SettingsPropertyType THIS_VALUETYPE = THIS_SETTING.valueType;
+        const QString THIS_HINT = THIS_SETTING.hint;
+        const SettingsPropertyType THIS_VALUETYPE =
+            THIS_SETTING.valueType;
         const QString I18N_DISPLAY_KEY = I18N(THIS_KEY);
 
         // Get QLineEdit for Divider lines.
@@ -402,6 +409,12 @@ ConfigDialog::createConfigDialog() {
                 mSettingChanges[i] = true;
                 mApplyButton->setEnabled(true);
             });
+            QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                (mFormLayout->labelForField(checkboxWidget));
+            if (HINT_LABEL) {
+                HINT_LABEL->installEventFilter(
+                    new SettingsDescriptionHints(this, THIS_HINT));
+            }
             continue;
         }
 
@@ -416,6 +429,12 @@ ConfigDialog::createConfigDialog() {
                 mSettingChanges[i] = true;
                 mApplyButton->setEnabled(true);
             });
+            QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                (mFormLayout->labelForField(colorButtonWidget));
+            if (HINT_LABEL) {
+                HINT_LABEL->installEventFilter(
+                    new SettingsDescriptionHints(this, THIS_HINT));
+            }
             continue;
         }
 
@@ -430,15 +449,23 @@ ConfigDialog::createConfigDialog() {
             if (THIS_KEY == SettingsHelper::AUTOHIDE_DELAY) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
                     this, [this, i, sliderEditWidget] (int value) {
+                    const QString I18N_TIME = (value == 1) ?
+                        I18N("second") : I18N("seconds");
                     const QString TOOLTIP_TEXT = QString::number(value) +
-                        " " + I18N("seconds");
+                        " " + I18N_TIME;
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
                     mSettingChanges[i] = true;
                     mApplyButton->setEnabled(true);
                 });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
                 sliderEditWidget->installEventFilter(
-                    new AutoHideDelayHints(sliderEditWidget));
+                    new SecondsHints(sliderEditWidget));
                 continue;
             }
 
@@ -464,8 +491,58 @@ ConfigDialog::createConfigDialog() {
                     mSettingChanges[i] = true;
                     mApplyButton->setEnabled(true);
                 });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
                 sliderEditWidget->installEventFilter(
                     new DesktopPreferenceHints(sliderEditWidget));
+                continue;
+            }
+
+            if (THIS_KEY == SettingsHelper::WIND_STRENGTH) {
+                connect(sliderEditWidget, &QSlider::valueChanged,
+                    this, [this, i, sliderEditWidget] (int value) {
+                    const QString TOOLTIP_TEXT = QString::number(value);
+                    QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
+                        sliderEditWidget);
+                    mSettingChanges[i] = true;
+                    mApplyButton->setEnabled(true);
+                });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
+                sliderEditWidget->installEventFilter(
+                    new WindStrengthHints(sliderEditWidget));
+                continue;
+            }
+
+            if (THIS_KEY == SettingsHelper::WIND_LENGTH ||
+                THIS_KEY == SettingsHelper::WIND_BURST_LENGTH) {
+                connect(sliderEditWidget, &QSlider::valueChanged,
+                    this, [this, i, sliderEditWidget] (int value) {
+                    const QString I18N_TIME = (value == 1) ?
+                        I18N("second") : I18N("seconds");
+                    const QString TOOLTIP_TEXT = QString::number(value) +
+                        " " + I18N_TIME;
+                    QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
+                        sliderEditWidget);
+                    mSettingChanges[i] = true;
+                    mApplyButton->setEnabled(true);
+                });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
+                sliderEditWidget->installEventFilter(
+                    new SecondsHints(sliderEditWidget));
                 continue;
             }
 
@@ -480,22 +557,35 @@ ConfigDialog::createConfigDialog() {
                     mSettingChanges[i] = true;
                     mApplyButton->setEnabled(true);
                 });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
                 sliderEditWidget->installEventFilter(
                     new OpacityHints(sliderEditWidget));
                 continue;
             }
 
-            if (THIS_KEY == SettingsHelper::FROSTEDFLAKES_SATURATION) {
+            if (THIS_KEY == SettingsHelper::FROSTEDFLAKES_COUNT) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
                     this, [this, i, sliderEditWidget] (int value) {
-                    const QString TOOLTIP_TEXT = QString::number(value);
+                    const QString TOOLTIP_TEXT = QString::number(value) +
+                        " " + I18N("flakes");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
                     mSettingChanges[i] = true;
                     mApplyButton->setEnabled(true);
                 });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
                 sliderEditWidget->installEventFilter(
-                    new SaturationHints(sliderEditWidget));
+                    new FlakeCountHints(sliderEditWidget));
                 continue;
             }
 
@@ -509,8 +599,14 @@ ConfigDialog::createConfigDialog() {
                     mSettingChanges[i] = true;
                     mApplyButton->setEnabled(true);
                 });
+                QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                    (mFormLayout->labelForField(sliderEditWidget));
+                if (HINT_LABEL) {
+                    HINT_LABEL->installEventFilter(
+                        new SettingsDescriptionHints(this, THIS_HINT));
+                }
                 sliderEditWidget->installEventFilter(
-                    new MaxStarSizeHints(sliderEditWidget));
+                    new FlakeSizeHints(sliderEditWidget));
                 continue;
             }
         }
@@ -529,6 +625,12 @@ ConfigDialog::createConfigDialog() {
                 mSettingChanges[i] = true;
                 mApplyButton->setEnabled(true);
             });
+            QLabel* HINT_LABEL = qobject_cast<QLabel*>
+                (mFormLayout->labelForField(langComboWidget));
+            if (HINT_LABEL) {
+                HINT_LABEL->installEventFilter(
+                    new SettingsDescriptionHints(this, THIS_HINT));
+            }
             continue;
         }
     }

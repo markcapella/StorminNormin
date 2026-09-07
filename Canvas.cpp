@@ -5,6 +5,8 @@
  * StorminNormin canvas constructor.
  */
 Canvas::Canvas(Window window) {
+    srand(static_cast<unsigned int>(time(nullptr)));
+
     mWindow = window;
 }
 
@@ -44,7 +46,7 @@ Canvas::initCanvas() {
     mFlakeColors[3] = FLAKE_COLOR_FOUR;
 
     mStormItemCount = (float) mSettingsHelper->getIntSetting(
-        SettingsHelper::FROSTEDFLAKES_SATURATION);
+        SettingsHelper::FROSTEDFLAKES_COUNT);
 
     mFlakeRadiusX = (mSettingsHelper->getIntSetting(SettingsHelper::
         FROSTEDFLAKES_SIZE) + 1) / static_cast<float>(mCanvasWidth);
@@ -527,33 +529,32 @@ Canvas::drawCanvas() {
         }
     }
 
-    // Assuming ~60 FPS (dt ≈ 0.0166s).
-    const double dt = 1.0 / 60.0;
-    const float dt_f = static_cast<float>(dt);
-    static double totalAppTime = 0.0;
-    totalAppTime += dt;
+    // Track app total frame time.
+    // Assuming ~60 FPS (FRAME_TIME ≈ 0.0166s).
+    mTotalAppTime += FRAME_TIME;
 
-    // Emulate STARTNEW_WIND_THREAD_TIME (every 1.0s).
-    mStartNewWindTimer += dt;
-    if (mStartNewWindTimer >= 1.0) {
-        updateWindGustStrength();
-        mStartNewWindTimer -= 1.0;
+    // Update wind gust direction & duration.
+    mUpdateWindDirAndDurTimer += FRAME_TIME;
+    if (mUpdateWindDirAndDurTimer >= 0.1) {
+        updateWindGustDirAndDur(mTotalAppTime);
+        mUpdateWindDirAndDurTimer -= 0.1;
     }
 
-    // Emulate UPDATE_WIND_THREAD_TIME (every 0.1s).
-    mUpdateWindTimer += dt;
-    if (mUpdateWindTimer >= 0.1) {
-        updateWindGustDirectionAndTime(totalAppTime);
-        mUpdateWindTimer -= 0.1;
+    // Update wind gust strength.
+    mUpdateWindVelocityTimer += FRAME_TIME;
+    if (mUpdateWindVelocityTimer >= 1.0) {
+        updateWindGustVelocity();
+        mUpdateWindVelocityTimer -= 1.0;
     }
-
-    // Target NDC Wind, smooth global wind transition.
-    float targetNdcWind = mWindStrength * 0.000015f;
-    mCurrentWindX += (targetNdcWind - mCurrentWindX) * 0.015f;
 
     // Physics Constants.
     const float GRAVITY = 1.2f;
     const float DRAG_MULTIPLIER = 4.0f;
+
+    // Set target wind, smooth global wind transition to it.
+    const float TGT_X_VEL = mWindVelocity * 0.000015f;
+    mRollingWindXVelocity += (TGT_X_VEL -
+        mRollingWindXVelocity) * 0.015f;
 
     // Particle Update Loop.
     for (int i = 0; i < mStormItemCount; i++) {
@@ -562,7 +563,8 @@ Canvas::drawCanvas() {
         // mFlakeVariation so no two flakes experience the exact
         // same wind strength. Varies between 0.7x and 1.3x.
         float flakeWindMod = 0.7f + (mFlakeVariation[i] * 0.6f);
-        float airVelX = (mCurrentWindX * flakeWindMod) * 60.0f;
+        float airVelX = (mRollingWindXVelocity *
+            flakeWindMod) * 60.0f;
 
         float currentVelX = mSpeedX[i] * 60.0f;
         float currentVelY = mSpeedY[i] * 60.0f;
@@ -584,29 +586,31 @@ Canvas::drawCanvas() {
         float accelY = (gravForceY + dragForceY) / mFlakeMass[i];
 
         // Integrate velocity.
-        currentVelX += accelX * dt_f;
-        currentVelY += accelY * dt_f;
+        const float FRAME_TIME_FLOAT =
+            static_cast<float>(FRAME_TIME);
+        currentVelX += accelX * FRAME_TIME_FLOAT;
+        currentVelY += accelY * FRAME_TIME_FLOAT;
 
         // Damping when air is calm.
         if (abs(airVelX) < 0.1f) {
             currentVelX *= 0.92f;
         }
 
-        // Independent Micro-Turbulence. Give each flake its own chaotic
-        // vertical/horizontal jitter tied to its rotation/variation
-        // rather than a shared global random call.
-        float noiseX = (static_cast<float>(
-            rand()) / RAND_MAX - 0.5f) * 0.4f;
-        float noiseY = (static_cast<float>(
-            rand()) / RAND_MAX - 0.5f) * 0.4f;
+        // Independent Micro-Turbulence. Give each flake
+        // its own jitter tied to its rotation.
+        const float NOISE_X = (static_cast<float>(rand()) /
+            RAND_MAX - 0.5f) * 0.4f;
+        const float NOISE_Y = (static_cast<float>(rand()) /
+            RAND_MAX - 0.5f) * 0.4f;
 
-        currentVelX += noiseX * (2.0f / mFlakeMass[i]) * dt_f;
-        currentVelY += (mInitialSpeedY[i] * 60.0f + noiseY) *
-            0.2f * dt_f;
+        currentVelX += NOISE_X * (2.0f / mFlakeMass[i]) *
+            FRAME_TIME_FLOAT;
+        currentVelY += (mInitialSpeedY[i] * 60.0f +
+            NOISE_Y) * 0.2f * FRAME_TIME_FLOAT;
 
         // Convert back to per-frame step increments.
-        mSpeedX[i] = currentVelX * dt_f;
-        mSpeedY[i] = currentVelY * dt_f;
+        mSpeedX[i] = currentVelX * FRAME_TIME_FLOAT;
+        mSpeedY[i] = currentVelY * FRAME_TIME_FLOAT;
 
         // Apply Positions & Rotation.
         mFlakeX[i] += mSpeedX[i];
@@ -614,8 +618,8 @@ Canvas::drawCanvas() {
 
         // Rotation driven by horizontal acceleration
         // & speed differential.
-        mFlakeRotation[i] += mSpinSpeed[i] + (mSpeedX[i] * 3.0f *
-            mFlakeVariation[i]);
+        mFlakeRotation[i] += mSpinSpeed[i] + (mSpeedX[i] *
+            3.0f * mFlakeVariation[i]);
 
         // Respawn & Edge Wrapping.
         if (mFlakeY[i] - mFlakeRadiusY >= 1.0f) {
@@ -653,6 +657,7 @@ Canvas::drawCanvas() {
     barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     barrier.image = mSwapchainImages[imageIndex];
     barrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
     vkCmdPipelineBarrier(mCommandBuffer,
         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
@@ -759,22 +764,27 @@ Canvas::drawCanvas() {
  */
 void
 Canvas::initStormItems() {
-    srand(41);
+    mWindBlowing = false;
 
-    // Setup Wind defaults.
-    mWhirlStrength = 0.01 * INITIAL_WHIRL_STRENGTH *
-        mWhirlStrengthSlider;
-    mWhirlStartTime = (mWhirlTimeSlider < 3.0) ?
-        3.0 : mWhirlTimeSlider;
-    mWhirlGustDuration = mWhirlStartTime;
+    mWindDirection = rand() % 2 ? 1 : -1;
+    const int WIND_LENGTH = mSettingsHelper->getIntSetting(
+        SettingsHelper::WIND_LENGTH);
+    mWindDuration = WIND_LENGTH;
 
-    mPrevWindAvailable = false;
-    mWindEnabled = 0;
-    mWindStrength = 100.0f;
-    mCurrentWindX = 0.0f;
+    // mWhirlStartTime = mWhirlTimeSlider;
+    // mWindDuration = mWhirlStartTime;
+    // mWindVelocity = 100.0f;
+    const int WIND_STRENGTH = mSettingsHelper->getIntSetting(
+        SettingsHelper::WIND_STRENGTH);
+    mWhirlVelocity = WIND_STRENGTH * WHIRL_VELOCITY_FACTOR;
+    mWindVelocity = mWhirlVelocity * 0.6f * mWindDirection;
 
-    mStartNewWindTimer = 0.0;
-    mUpdateWindTimer = 0.0;
+    mUpdateWindVelocityTimer = 0.0;
+    mUpdateWindDirAndDurTimer = 0.0;
+
+    mPrevWindTime = 0.0;
+    mPrevWindTimeInited = false;
+    mRollingWindXVelocity = 0.0f;
 
     mFlakeX.resize(mStormItemCount);
     mFlakeY.resize(mStormItemCount);
@@ -856,80 +866,69 @@ Canvas::updateStormItem(int particle, bool randomY) {
 }
 
 /**
- * Routinely starts a new wind gust strength.
- */
-void
-Canvas::updateWindGustStrength() {
-
-    switch (mWindEnabled) {
-        case 0:
-        default: {
-            // Ambient random wander with a strong pull towards zero.
-            const float RESULT = (static_cast<float>
-                (rand()) / RAND_MAX) * mWhirlStrength;
-            mWindStrength += RESULT - (mWhirlStrength / 2.0f);
-
-            // **Stronger dampening**: Actively pull ambient wind
-            // toward 0 so it dies down completely.
-            mWindStrength *= 0.75f;
-
-            // If it gets very close to zero, kill it completely to
-            // allow dead calms.
-            if (mWindStrength > -5.0f && mWindStrength < 5.0f) {
-                mWindStrength = 0.0f;
-            }
-
-            // Hard limits.
-            if (mWindStrength > MAX_WIND_STRENGTH) {
-                mWindStrength = MAX_WIND_STRENGTH;
-            }
-            if (mWindStrength < -MAX_WIND_STRENGTH) {
-                mWindStrength = -MAX_WIND_STRENGTH;
-            }
-            break;
-        }
-
-        case 1: {
-            // Sustained directional gust.
-            mWindStrength = mWindDirection * 0.6f * mWhirlStrength;
-            break;
-        }
-    }
-}
-
-/**
  * Routinely updates wind gust state (on / off), &
  * direction & duration.
  */
 void
-Canvas::updateWindGustDirectionAndTime(
-    double currentTimeSeconds) {
-
-    // Sanity check duration.
-    if (!mPrevWindAvailable) {
+Canvas::updateWindGustDirAndDur(double currentTimeSeconds) {
+    // Guard ELAPSED_TIME calculation.
+    if (!mPrevWindTimeInited) {
+        mPrevWindTimeInited = true;
         mPrevWindTime = currentTimeSeconds;
-        mPrevWindAvailable = true;
     }
-    const double ELAPSED = currentTimeSeconds - mPrevWindTime;
+
+    // Maintain wind for it's duration.
+    const double ELAPSED_TIME = currentTimeSeconds - mPrevWindTime;
     mPrevWindTime = currentTimeSeconds;
-    const double THRESHOLD = 2.0 * mWhirlGustDuration *
-        (static_cast<double>(rand()) / RAND_MAX);
-    if (ELAPSED < THRESHOLD) {
+    const double THRESHOLD_TIME = mWindDuration +
+        mWindDuration * (static_cast<double>(rand()) / RAND_MAX);
+    if (ELAPSED_TIME < THRESHOLD_TIME) {
         return;
     }
 
-    // Gust lasts ~5 seconds on average.
+    // After that, there's a 2/3 chance to start a new gust.
     if ((static_cast<double>(rand()) / RAND_MAX) > 0.65) {
-        mWindEnabled = 1;
-        mWhirlGustDuration = 5.0;
-        mWindDirection = static_cast<double>(rand()) /
-            RAND_MAX > 0.4 ? 1 : -1;
-
-    // Return to long calm interval (~50s).
-    } else {
-        mWindEnabled = 0;
-        mWhirlGustDuration = mWhirlStartTime;
+        mWindBlowing = true;
+        mWindDirection = rand() % 2 ? 1 : -1;
+        const int WIND_BURST_LENGTH = mSettingsHelper->getIntSetting(
+            SettingsHelper::WIND_BURST_LENGTH);
+        mWindDuration = WIND_BURST_LENGTH;
+        return;
     }
+
+    // Else, we simply return to calm.
+    mWindBlowing = false;
+    const int WIND_LENGTH = mSettingsHelper->getIntSetting(
+        SettingsHelper::WIND_LENGTH);
+    mWindDuration = WIND_LENGTH;
+}
+
+/**
+ * Routinely starts a new wind gust strength.
+ */
+void
+Canvas::updateWindGustVelocity() {
+    // Sustained directional gust.
+    if (mWindBlowing) {
+        mWindVelocity = mWhirlVelocity * 0.6f * mWindDirection;
+        return;
+    }
+
+    const float RESULT = (static_cast<float>
+        (rand()) / RAND_MAX) * mWhirlVelocity;
+    mWindVelocity += RESULT - (mWhirlVelocity / 2.0f);
+
+    // **Stronger dampening**: Actively pull ambient
+    // wind toward 0 so it dies down completely.
+    mWindVelocity *= 0.75f;
+
+    // If it gets very close to zero, kill it
+    // completely to allow dead calms.
+    if (mWindVelocity > -5.0f && mWindVelocity < 5.0f) {
+        mWindVelocity = 0.0f;
+    }
+    mWindVelocity = clampToRange(-MAX_WIND_VELOCITY,
+        mWindVelocity, MAX_WIND_VELOCITY);
 }
 
 /**

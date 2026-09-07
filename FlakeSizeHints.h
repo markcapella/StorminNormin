@@ -1,16 +1,12 @@
-
 #pragma once
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-struct OpacityHints : public QObject {
+struct FlakeSizeHints : public QObject {
 
     public:
-        /**
-         * Constructor.
-         */
-        OpacityHints(QSlider* slider) : QObject(slider),
+        FlakeSizeHints(QSlider* slider) : QObject(slider),
             s(slider) {}
 
         bool eventFilter(QObject* o, QEvent* e) override {
@@ -18,9 +14,9 @@ struct OpacityHints : public QObject {
             // crosses into the slider.
             if (e->type() == QEvent::Enter) {
                 if (!s->isSliderDown()) {
-                    const int VALUE_PCT = 100 * s->value() / 255;
-                    const QString TOOLTIP_TEXT = QString::number(
-                        VALUE_PCT) + "%";
+                    const int VALUE = s->value();
+                    const QString TOOLTIP_TEXT = QString::number(VALUE) +
+                        " " + I18N("pixels");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
                 return false;
@@ -30,9 +26,9 @@ struct OpacityHints : public QObject {
             if (e->type() == QEvent::ToolTip ||
                 e->type() == QEvent::MouseMove) {
                 if (!s->isSliderDown()) {
-                    const int VALUE_PCT = 100 * s->value() / 255;
-                    const QString TOOLTIP_TEXT = QString::number(
-                        VALUE_PCT) + "%";
+                    const int VALUE = s->value();
+                    const QString TOOLTIP_TEXT = QString::number(VALUE) +
+                        " " + I18N("pixels");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
             }
@@ -45,6 +41,7 @@ struct OpacityHints : public QObject {
          * Members.
          */
         QSlider* s;
+
 };
 
 #pragma GCC diagnostic pop

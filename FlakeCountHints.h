@@ -4,10 +4,10 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-struct AutoHideDelayHints : public QObject {
+struct FlakeCountHints : public QObject {
 
     public:
-        AutoHideDelayHints(QSlider* slider) : QObject(slider),
+        FlakeCountHints(QSlider* slider) : QObject(slider),
             s(slider) {}
 
         bool eventFilter(QObject* o, QEvent* e) override {
@@ -17,7 +17,7 @@ struct AutoHideDelayHints : public QObject {
                 if (!s->isSliderDown()) {
                     const int VALUE = s->value();
                     const QString TOOLTIP_TEXT = QString::number(VALUE) +
-                        " " + I18N("seconds");
+                        " " + I18N("flakes");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
                 return false;
@@ -29,7 +29,7 @@ struct AutoHideDelayHints : public QObject {
                 if (!s->isSliderDown()) {
                     const int VALUE = s->value();
                     const QString TOOLTIP_TEXT = QString::number(VALUE) +
-                        " " + I18N("seconds");
+                        " " + I18N("flakes");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
             }
@@ -42,7 +42,6 @@ struct AutoHideDelayHints : public QObject {
          * Members.
          */
         QSlider* s;
-
 };
 
 #pragma GCC diagnostic pop

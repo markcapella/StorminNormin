@@ -148,10 +148,10 @@ typedef chrono::steady_clock Clock;
 
 #include "StickyWidgetIII.h"
 
-#include "AutoHideDelayHints.h"
+#include "SecondsHints.h"
 #include "DesktopPreferenceHints.h"
 #include "OpacityHints.h"
-#include "SaturationHints.h"
-#include "MaxStarSizeHints.h"
+#include "FlakeCountHints.h"
+#include "FlakeSizeHints.h"
 
 #include "ComboboxDelegate.h"

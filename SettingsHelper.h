@@ -15,50 +15,81 @@ enum SettingsPropertyType {
 };
 
 class SettingsHelper {
-    #define IC_QString static inline const QString
 
     public:
-        // General tab group.
-        IC_QString GENERAL_GROUP = "General";
+        // Tab groups.
+        static inline const QString GENERAL_GROUP       = "General";
+        static inline const QString FROSTEDFLAKES_GROUP = "FrostedFlakes";
 
-        // Frosted Flakes tab group.
-        IC_QString FROSTEDFLAKES_GROUP = "Star_Group";
+        /**
+         * Configurable Settings strings.
+         */
+        static inline const QString FROSTEDFLAKES_SIZE        = "❄️ Flake Size";
+        static inline const QString FROSTEDFLAKES_COUNT       = "Flake Count";
 
-        // Settings.
-        IC_QString FROSTEDFLAKES_SIZE = "❄️ Flake Size";
-        IC_QString FROSTEDFLAKES_SATURATION = "🌧️ Storm Saturation";
-        IC_QString DIVIDER_0 = "divider00";
+        static inline const QString FROSTEDFLAKES_COLOR_ONE   = "Flake Color One";
+        static inline const QString FROSTEDFLAKES_COLOR_TWO   = "Flake Color Two";
+        static inline const QString FROSTEDFLAKES_COLOR_THREE = "Flake Color Three";
+        static inline const QString FROSTEDFLAKES_COLOR_FOUR  = "Flake Color Four";
 
-        IC_QString FROSTEDFLAKES_COLOR_ONE = "Flake Color One";
-        IC_QString FROSTEDFLAKES_COLOR_TWO = "Flake Color Two";
-        IC_QString FROSTEDFLAKES_COLOR_THREE = "Flake Color Three";
-        IC_QString FROSTEDFLAKES_COLOR_FOUR = "Flake Color Four";
-        IC_QString DIVIDER_1 = "divider01";
+        static inline const QString WIND_STRENGTH             = "Wind Strength";
+        static inline const QString WIND_LENGTH               = "Wind Length";
+        static inline const QString WIND_BURST_LENGTH         = "Wind Burst Length";
 
-        IC_QString BACKGROUND_COLOR = "Background Color";
-        IC_QString BACKGROUND_OPACITY = "Background Opacity";
-        IC_QString DIVIDER_2 = "divider02";
+        static inline const QString BACKGROUND_COLOR          = "Background Color";
+        static inline const QString BACKGROUND_OPACITY        = "Background Opacity";
 
-        IC_QString APP_LANGUAGE = "Language";
-        IC_QString DIVIDER_3 = "divider03";
+        static inline const QString APP_LANGUAGE              = "Language";
 
-        IC_QString ON_TOP_INSTEAD = "Stick to Top";
-        IC_QString ALLOW_DESKTOP_DRAG = "Allow Desktop Drag";
-        IC_QString PREFERRED_DESKTOP = "Preferred Desktop";
-        IC_QString DESKTOP_OVERHANG = "Allow Desktop Overhang";
-        IC_QString DIVIDER_4 = "divider04";
+        static inline const QString ON_TOP_INSTEAD            = "Stick to Top";
+        static inline const QString ALLOW_DESKTOP_DRAG        = "Allow Desktop Drag";
+        static inline const QString PREFERRED_DESKTOP         = "Preferred Desktop";
+        static inline const QString DESKTOP_OVERHANG          = "Allow Desktop Overhang";
 
-        IC_QString SHOW_PIN_ON_WINDOW_HOVER = "Show Pin on Window Hover";
-        IC_QString AUTOHIDE_CONTROLS = "Auto hide Controls";
-        IC_QString AUTOHIDE_DELAY = "Auto hide Delay";
-        IC_QString DIVIDER_5 = "divider05";
+        static inline const QString SHOW_PIN_ON_WINDOW_HOVER  = "Show Pin on Window Hover";
+        static inline const QString AUTOHIDE_CONTROLS         = "Auto hide Controls";
+        static inline const QString AUTOHIDE_DELAY            = "Auto hide Delay";
 
-        IC_QString SHOW_ICONS_ON_BUTTONS = "Show Icons on Buttons";
+        static inline const QString SHOW_SETTINGS_HINTS       = "Show Settings Hints";
+        static inline const QString SHOW_ICONS_ON_BUTTONS     = "Show Icons on Buttons";
+
+        /**
+         * Configurable Settings hint strings.
+         */
+        static inline const QString FROSTEDFLAKES_SIZE_HINT        = "Select smaller to larger sized storm items.";
+        static inline const QString FROSTEDFLAKES_COUNT_HINT       = "Select more or less items in the storm.";
+
+        static inline const QString FROSTEDFLAKES_COLOR_ONE_HINT   = "Select up to four storm item colors.";
+        static inline const QString FROSTEDFLAKES_COLOR_TWO_HINT   = "Select up to four storm item colors.";
+        static inline const QString FROSTEDFLAKES_COLOR_THREE_HINT = "Select up to four storm item colors.";
+        static inline const QString FROSTEDFLAKES_COLOR_FOUR_HINT  = "Select up to four storm item colors.";
+
+        static inline const QString WIND_STRENGTH_HINT             = "Select a weaker or stronger wind strength.";
+        static inline const QString WIND_LENGTH_HINT               = "Select shorter or longer windy periods.";
+        static inline const QString WIND_BURST_LENGTH_HINT         = "Select shorter or longer wind burst periods.";
+
+        static inline const QString BACKGROUND_COLOR_HINT          = "Select the storms background color.";
+        static inline const QString BACKGROUND_OPACITY_HINT        = "Select the storms background color opacity.";
+
+        static inline const QString APP_LANGUAGE_HINT              = "Select the language used in these dialogs.";
+
+        static inline const QString ON_TOP_INSTEAD_HINT            = "Allow the storm to stay above other windows.";
+        static inline const QString ALLOW_DESKTOP_DRAG_HINT        = "Enable or disable the ability to drag the storm window to a different desktop.";
+        static inline const QString PREFERRED_DESKTOP_HINT         = "Enable the storm window on one preferred desktop, or on all of them.";
+        static inline const QString DESKTOP_OVERHANG_HINT          = "Enable the storm window to extend beyond the right or bottom edges of the desktop.";
+
+        static inline const QString SHOW_PIN_ON_WINDOW_HOVER_HINT  = "Enable or disable the Pin button icon when the storm window is hovered.";
+        static inline const QString AUTOHIDE_CONTROLS_HINT         = "Enable or disable automatic hide of the storm window corner control buttons after a delay.";
+        static inline const QString AUTOHIDE_DELAY_HINT            = "Select the delay for automatic hide of the storm window corner control buttons.";
+
+        static inline const QString SHOW_SETTINGS_HINTS_HINT       = "Enable or disable display of these settings descriptions on mouse hover.";
+        static inline const QString SHOW_ICONS_ON_BUTTONS_HINT     = "Enable or disable icon display in Dialog buttons.";
 
         // Settings property struct.
         struct SettingsProperty {
             QString group = "";
             QString name = "";
+            QString hint = "";
             SettingsPropertyType valueType = NONE_VALUETYPE;
             QString initialValue = "";
             int rangeMinimum = numeric_limits<int>::min();
@@ -69,134 +100,162 @@ class SettingsHelper {
         // appearance in Dialog.
         static inline const vector<SettingsProperty> PROPERTIES = {
             { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_SIZE,
+              .hint = FROSTEDFLAKES_SIZE_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "15",
               .rangeMinimum = 10, .rangeMaximum = 80
             },
-
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_SATURATION,
+            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COUNT,
+              .hint = FROSTEDFLAKES_COUNT_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "250",
               .rangeMinimum = 25, .rangeMaximum = 1000
             },
-
-            { .group = FROSTEDFLAKES_GROUP, .name = DIVIDER_0,
+            { .group = FROSTEDFLAKES_GROUP, .name = "d0", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
             { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_ONE,
+              .hint = FROSTEDFLAKES_COLOR_ONE_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#fff9d7",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_TWO,
+              .hint = FROSTEDFLAKES_COLOR_TWO_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#FFBF00",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_THREE,
+              .hint = FROSTEDFLAKES_COLOR_THREE_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#ff7b08",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_FOUR,
+              .hint = FROSTEDFLAKES_COLOR_FOUR_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#ff1170",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
+            { .group = FROSTEDFLAKES_GROUP, .name = "d1", .hint = "",
+              .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
+              .rangeMinimum = numeric_limits<int>::min(),
+              .rangeMaximum = numeric_limits<int>::max()
+            },
 
-            { .group = GENERAL_GROUP, .name = DIVIDER_1,
+            { .group = FROSTEDFLAKES_GROUP, .name = WIND_STRENGTH,
+              .hint = WIND_STRENGTH_HINT,
+              .valueType = SLIDER_VALUETYPE, .initialValue = "100",
+              .rangeMinimum = 0, .rangeMaximum = 300
+            },
+            { .group = FROSTEDFLAKES_GROUP, .name = WIND_LENGTH,
+              .hint = WIND_LENGTH_HINT,
+              .valueType = SLIDER_VALUETYPE, .initialValue = "30",
+              .rangeMinimum = 3, .rangeMaximum = 50
+            },
+            { .group = FROSTEDFLAKES_GROUP, .name = WIND_BURST_LENGTH,
+              .hint = WIND_BURST_LENGTH_HINT,
+              .valueType = SLIDER_VALUETYPE, .initialValue = "5",
+              .rangeMinimum = 5, .rangeMaximum = 10
+            },
+            { .group = FROSTEDFLAKES_GROUP, .name = "d2", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
             { .group = GENERAL_GROUP, .name = BACKGROUND_COLOR,
+              .hint = BACKGROUND_COLOR_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#0055ff",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = GENERAL_GROUP, .name = BACKGROUND_OPACITY,
+              .hint = BACKGROUND_OPACITY_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "50",
               .rangeMinimum = 0, .rangeMaximum = 255
             },
-
-            { .group = GENERAL_GROUP, .name = DIVIDER_2,
+            { .group = GENERAL_GROUP, .name = "d3", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
             { .group = GENERAL_GROUP, .name = APP_LANGUAGE,
+              .hint = APP_LANGUAGE_HINT,
               .valueType = COMBOBOX_VALUETYPE, .initialValue = "en",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
-            { .group = GENERAL_GROUP, .name = DIVIDER_3,
+            { .group = GENERAL_GROUP, .name = "d4", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
             { .group = GENERAL_GROUP, .name = ON_TOP_INSTEAD,
+              .hint = ON_TOP_INSTEAD_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = GENERAL_GROUP, .name = ALLOW_DESKTOP_DRAG,
+              .hint = ALLOW_DESKTOP_DRAG_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = GENERAL_GROUP, .name = PREFERRED_DESKTOP,
+              .hint = PREFERRED_DESKTOP_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "-1",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = GENERAL_GROUP, .name = DESKTOP_OVERHANG,
+              .hint = DESKTOP_OVERHANG_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "false",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
-            { .group = GENERAL_GROUP, .name = DIVIDER_4,
+            { .group = GENERAL_GROUP, .name = "d5", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
             { .group = GENERAL_GROUP, .name = SHOW_PIN_ON_WINDOW_HOVER,
+              .hint = SHOW_PIN_ON_WINDOW_HOVER_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = GENERAL_GROUP, .name = AUTOHIDE_CONTROLS,
+              .hint = AUTOHIDE_CONTROLS_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "false",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-
             { .group = GENERAL_GROUP, .name = AUTOHIDE_DELAY,
+              .hint = AUTOHIDE_DELAY_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "4",
               .rangeMinimum = 1, .rangeMaximum = 9
             },
-
-            { .group = GENERAL_GROUP, .name = DIVIDER_5,
+            { .group = GENERAL_GROUP, .name = "d6", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
+            { .group = GENERAL_GROUP, .name = SHOW_SETTINGS_HINTS,
+              .hint = SHOW_SETTINGS_HINTS_HINT,
+              .valueType = BOOL_VALUETYPE, .initialValue = "true",
+              .rangeMinimum = std::numeric_limits<int>::min(),
+              .rangeMaximum = std::numeric_limits<int>::max()
+            },
             { .group = GENERAL_GROUP, .name = SHOW_ICONS_ON_BUTTONS,
+              .hint = SHOW_ICONS_ON_BUTTONS_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = std::numeric_limits<int>::min(),
               .rangeMaximum = std::numeric_limits<int>::max()

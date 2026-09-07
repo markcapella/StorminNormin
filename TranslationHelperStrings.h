@@ -100,6 +100,43 @@ const QStringList TRANSLATION_SET_6 = {
     "Atraso de ocultação automática",
     "Задержка автоматического скрытия"
 };
+
+const QStringList WIND_STRENGTH_SET = {
+    "Wind Strength",
+    "Windstärke",
+    "Fuerza del viento",
+    "Force du vent",
+    "Forza del vento",
+    "風力",
+    "Windkracht",
+    "Intensidade do Vento",
+    "Сила ветра"
+};
+
+const QStringList WIND_LENGTH_SET = {
+    "Wind Length",
+    "Windlänge",
+    "Longitud del viento",
+    "Longueur du vent",
+    "Lunghezza del vento",
+    "風の長さ",
+    "Windlengte",
+    "Comprimento do Vento",
+    "Длина ветра"
+};
+
+const QStringList WIND_BURST_LENGTH_SET = {
+    "Wind Burst Length",
+    "Windstoßlänge",
+    "Longitud de la ráfaga de viento",
+    "Longueur de la rafale de vent",
+    "Lunghezza dell'impulso di vento",
+    "風の突風の長さ",
+    "Lengte van windvlaag",
+    "Duração da Rajada de Vento",
+    "Длина порыва ветра"
+};
+
 const QStringList TRANSLATION_SET_7 = {
     "Background Color",
     "Hintergrundfarbe",
@@ -322,17 +359,7 @@ const QStringList TRANSLATION_SET_26 = {
     "Gerador de Arte Por Acaso",
     "Возможно Генератор Искусства"
 };
-const QStringList TRANSLATION_SET_27 = {
-    "pixels",
-    "Pixel",
-    "píxeles",
-    "pixels",
-    "pixel",
-    "ピクセル",
-    "pixels",
-    "pixels",
-    "пиксели"
-};
+
 const QStringList TRANSLATION_SET_28 = {
     "Position Change Delay",
     "Positionsänderungsverzögerung",
@@ -377,17 +404,17 @@ const QStringList TRANSLATION_SET_31 = {
     "Executando a quantidade máxima de instâncias já",
     "Запуск уже максимального количества экземпляров"
 };
-const QStringList TRANSLATION_SET_32 = {
-    "seconds",
-    "Sekunden",
-    "segundos",
-    "secondes",
-    "secondi",
-    "秒",
-    "seconden",
-    "segundos",
-    "секунды"
+
+const QStringList SECONDS_TRANSLATION_SET = {
+    "seconds", "Sekunden", "segundos", "secondes", "secondi",
+    "秒", "seconden", "segundos", "секунды"
 };
+
+const QStringList SECOND_TRANSLATION_SET = {
+    "second", "Sekunde", "segundo", "seconde", "secondo",
+    "秒", "seconde", "segundo", "секунда"
+};
+
 const QStringList TRANSLATION_SET_33 = {
     "Sees you using Qt Platform theming ... warnings end.",
     "Sieht, dass Sie Qt-Plattform-Theme verwenden ... Warnungen enden.",
@@ -505,15 +532,15 @@ const QStringList TRANSLATION_SET_42 = {
 };
 
 const QStringList TRANSLATION_SET_43 = {
-    "🌧️ Storm Saturation",
-    "🌧️ Sturmsättigung",
-    "🌧️ Saturación de Tormenta",
-    "🌧️ Saturation de tempête",
-    "🌧️ Saturazione della tempesta",
-    "🌧️ 嵐の飽和",
-    "🌧️ Stormverzadiging",
-    "🌧️ Saturação de Tempestade",
-    "🌧️ Насыщение штормом"
+    "Flake Count",
+    "Flockenzahl",
+    "Recuento de escamas",
+    "Nombre de flocons",
+    "Conteggio dei fiocchi",
+    "フレーク数",
+    "Vlokkentelling",
+    "Contagem de Flocos",
+    "Количество хлопьев"
 };
 
 const QStringList TRANSLATION_SET_44 = {
@@ -627,8 +654,6 @@ const QStringList TRANSLATION_SET_53 = {
     "Ваш оконный менеджер"
 };
 
-
-
 /**
  * Manually added strings are here.
  */
@@ -671,6 +696,18 @@ const QStringList TRANSLATION_SET_59 = { "Allow Desktop Overhang",
     "Permitir projeção da área de trabalho", "Разрешить выступ рабочего стола"
 };
 
+const QStringList SHOW_SETTINGS_HINTS = {
+    "Show Settings Hints",
+    "Einstellungen Hinweise anzeigen",
+    "Mostrar sugerencias de configuración",
+    "Afficher les conseils des paramètres",
+    "Mostra suggerimenti delle impostazioni",
+    "設定のヒントを表示",
+    "Toon instellingen tips",
+    "Mostrar Dicas de Configurações",
+    "Показать подсказки настроек"
+};
+
 const QStringList SHOW_ICONS_ON_BUTTONS_SET = {
     "Show Icons on Buttons",
     "Symbole auf Schaltflächen anzeigen",
@@ -681,6 +718,274 @@ const QStringList SHOW_ICONS_ON_BUTTONS_SET = {
     "Pictogrammen op knoppen weergeven",
     "Mostrar ícones nos botões",
     "Показывать значки на кнопках"
+};
+
+/**
+ * Settings Hints.
+ */
+const QStringList FROSTEDFLAKES_SIZE_HINT = {
+    "Select smaller to larger sized storm items.",
+    "Wählen Sie Sturmgegenstände von kleinerer bis größerer Größe aus.",
+    "Seleccione artículos de tormenta de tamaño más pequeño a más grande.",
+    "Sélectionnez des articles de tempête de taille petite à grande.",
+    "Seleziona gli articoli per tempesta da dimensioni più piccole a più grandi.",
+    "小さいサイズから大きいサイズの嵐アイテムを選択してください。",
+    "Selecteer stormitems van klein naar groot formaat.",
+    "Selecione itens de tempestade de tamanho menor para maior.",
+    "Выберите штормовые предметы от меньшего к большему размеру."
+};
+
+const QStringList FROSTEDFLAKES_COUNT_HINT = {
+    "Select more or less items in the storm.",
+    "Wählen Sie mehr oder weniger Artikel im Sturm aus.",
+    "Selecciona más o menos artículos en la tormenta.",
+    "Sélectionnez plus ou moins d'articles dans la tempête.",
+    "Seleziona più o meno articoli nella tempesta.",
+    "嵐の中で、アイテムを多く取るか少なく取るか選んでください。",
+    "Selecteer meer of minder items in de storm.",
+    "Selecione mais ou menos itens na tempestade.",
+    "Выберите больше или меньше предметов в шторме."
+};
+
+const QStringList FROSTEDFLAKES_COLOR_ONE_HINT = {
+    "Select up to four storm item colors.",
+    "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
+    "Seleccione hasta cuatro colores de artículos de tormenta.",
+    "Sélectionnez jusqu'à quatre couleurs d'objets de tempête.",
+    "Seleziona fino a quattro colori degli oggetti della tempesta.",
+    "最大で4つのストームアイテムの色を選択してください。",
+    "Selecteer maximaal vier stormitemkleuren.",
+    "Selecione até quatro cores de itens de tempestade.",
+    "Выберите до четырех цветов предметов шторма."
+};
+
+const QStringList FROSTEDFLAKES_COLOR_TWO_HINT = {
+    "Select up to four storm item colors.",
+    "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
+    "Seleccione hasta cuatro colores de artículos de tormenta.",
+    "Sélectionnez jusqu'à quatre couleurs d'objets de tempête.",
+    "Seleziona fino a quattro colori degli oggetti della tempesta.",
+    "最大で4つのストームアイテムの色を選択してください。",
+    "Selecteer maximaal vier stormitemkleuren.",
+    "Selecione até quatro cores de itens de tempestade.",
+    "Выберите до четырех цветов предметов шторма."
+};
+
+const QStringList FROSTEDFLAKES_COLOR_THREE_HINT = {
+    "Select up to four storm item colors.",
+    "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
+    "Seleccione hasta cuatro colores de artículos de tormenta.",
+    "Sélectionnez jusqu'à quatre couleurs d'objets de tempête.",
+    "Seleziona fino a quattro colori degli oggetti della tempesta.",
+    "最大で4つのストームアイテムの色を選択してください。",
+    "Selecteer maximaal vier stormitemkleuren.",
+    "Selecione até quatro cores de itens de tempestade.",
+    "Выберите до четырех цветов предметов шторма."
+};
+
+const QStringList FROSTEDFLAKES_COLOR_FOUR_HINT = {
+    "Select up to four storm item colors.",
+    "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
+    "Seleccione hasta cuatro colores de artículos de tormenta.",
+    "Sélectionnez jusqu'à quatre couleurs d'objets de tempête.",
+    "Seleziona fino a quattro colori degli oggetti della tempesta.",
+    "最大で4つのストームアイテムの色を選択してください。",
+    "Selecteer maximaal vier stormitemkleuren.",
+    "Selecione até quatro cores de itens de tempestade.",
+    "Выберите до четырех цветов предметов шторма."
+};
+
+const QStringList WIND_STRENGTH_HINT_SET = {
+    "Select a weaker or stronger wind strength.",
+    "Wählen Sie eine schwächere oder stärkere Windstärke.",
+    "Seleccione una fuerza de viento más débil o más fuerte.",
+    "Sélectionnez une force de vent plus faible ou plus forte.",
+    "Seleziona una forza del vento più debole o più forte.",
+    "より弱いまたはより強い風の強さを選択してください。",
+    "Selecteer een zwakkere of sterkere windsnelheid.",
+    "Selecione uma intensidade de vento mais fraca ou mais forte.",
+    "Выберите более слабую или более сильную силу ветра."
+};
+
+const QStringList WIND_LENGTH_HINT_SET = {
+    "Select shorter or longer windy periods.",
+    "Wählen Sie kürzere oder längere windige Perioden.",
+    "Seleccione períodos ventosos más cortos o más largos.",
+    "Sélectionnez des périodes venteuses plus courtes ou plus longues.",
+    "Seleziona periodi di vento più brevi o più lunghi.",
+    "風の強い期間を短めまたは長めに選択してください。",
+    "Selecteer kortere of langere winderige periodes.",
+    "Selecione períodos ventosos mais curtos ou mais longos.",
+    "Выберите более короткие или более длинные ветреные периоды."
+};
+
+const QStringList WIND_BURST_LENGTH_HINT_SET = {
+    "Select shorter or longer wind burst periods.",
+    "Wählen Sie kürzere oder längere Windstoßperioden.",
+    "Seleccione períodos de ráfagas de viento más cortos o más largos.",
+    "Sélectionnez des périodes de rafales de vent plus courtes ou plus longues.",
+    "Seleziona periodi di raffica di vento più brevi o più lunghi.",
+    "より短いまたはより長い風の突風期間を選択してください。",
+    "Selecteer kortere of langere windstotenperioden.",
+    "Selecione períodos de rajadas de vento mais curtos ou mais longos.",
+    "Выберите более короткие или более длинные периоды порывов ветра."
+};
+
+const QStringList BACKGROUND_COLOR_HINT = {
+    "Select the storms background color.",
+    "Wählen Sie die Hintergrundfarbe des Sturms.",
+    "Seleccione el color de fondo de las tormentas.",
+    "Sélectionnez la couleur de fond des tempêtes.",
+    "Seleziona il colore di sfondo delle tempeste.",
+    "嵐の背景色を選択してください。",
+    "Selecteer de achtergrondkleur van de stormen.",
+    "Selecione a cor de fundo das tempestades.",
+    "Выберите цвет фона для штормов."
+};
+
+const QStringList BACKGROUND_OPACITY_HINT = {
+    "Select the storms background color opacity.",
+    "Wählen Sie die Transparenz der Hintergrundfarbe des Sturms.",
+    "Seleccione la opacidad del color de fondo de las tormentas.",
+    "Sélectionnez l'opacité de la couleur d'arrière-plan des tempêtes.",
+    "Seleziona l'opacità del colore di sfondo delle tempeste.",
+    "嵐の背景色の不透明度を選択してください。",
+    "Selecteer de transparantie van de achtergrondkleur van de stormen.",
+    "Selecione a opacidade da cor de fundo das tempestades.",
+    "Выберите непрозрачность фонового цвета штормов."
+};
+
+const QStringList APP_LANGUAGE_HINT = {
+    "Select the language used in these dialogs.",
+    "Wählen Sie die in diesen Dialogen verwendete Sprache aus.",
+    "Seleccione el idioma utilizado en estos diálogos.",
+    "Sélectionnez la langue utilisée dans ces dialogues.",
+    "Seleziona la lingua utilizzata in questi dialoghi.",
+    "これらの対話で使用されている言語を選択してください。",
+    "Selecteer de taal die in deze dialogen wordt gebruikt.",
+    "Selecione o idioma usado nesses diálogos.",
+    "Выберите язык, используемый в этих диалогах."
+};
+
+const QStringList ON_TOP_INSTEAD_HINT = {
+    "Allow the storm to stay above other windows.",
+    "Erlaube dem Sturm, über anderen Fenstern zu bleiben.",
+    "Permitir que la tormenta permanezca sobre otras ventanas.",
+    "Permettre à la tempête de rester au-dessus des autres fenêtres.",
+    "Consenti alla tempesta di rimanere sopra le altre finestre.",
+    "嵐が他のウィンドウの上に表示されるようにする。",
+    "Laat de storm boven andere vensters blijven.",
+    "Permitir que a tempestade fique acima de outras janelas.",
+    "Разрешите шторму оставаться поверх других окон."
+};
+
+const QStringList ALLOW_DESKTOP_DRAG_HINT = {
+    "Enable or disable the ability to drag the storm window to a different desktop.",
+    "Aktivieren oder deaktivieren Sie die Möglichkeit, das Sturmfenster auf einen anderen Desktop zu ziehen.",
+    "Habilitar o deshabilitar la capacidad de arrastrar la ventana de tormenta a un escritorio diferente.",
+    "Activer ou désactiver la possibilité de faire glisser la fenêtre de tempête vers un bureau différent.",
+    "Abilita o disabilita la possibilità di trascinare la finestra temporale su un desktop diverso.",
+    "ストームウィンドウを別のデスクトップにドラッグする機能を有効または無効にします。",
+    "Schakel in of uit dat het mogelijk is om het stormvenster naar een ander bureaublad te slepen.",
+    "Ativar ou desativar a capacidade de arrastar a janela de tempestade para uma área de trabalho diferente.",
+    "Включите или отключите возможность перетаскивать окно штормовой панели на другой рабочий стол."
+};
+
+const QStringList PREFERRED_DESKTOP_HINT = {
+    "Enable the storm window on one preferred desktop, or on all of them.",
+    "Aktivieren Sie das Sturmfenster auf einem bevorzugten Desktop oder auf allen.",
+    "Habilita la ventana contra tormentas en un escritorio preferido, o en todos ellos.",
+    "Activez la fenêtre pare-tempête sur un bureau préféré, ou sur tous.",
+    "Abilita la finestra tempestosa su un desktop preferito o su tutti.",
+    "1つの好みのデスクトップ、またはすべてのデスクトップでストームウィンドウを有効にします。",
+    "Schakel het stormraam in op één voorkeursdesktop, of op ze allemaal.",
+    "Ative a janela de tempestade em um desktop preferido, ou em todos eles.",
+    "Включите штормовое окно на одном предпочитаемом рабочем столе или на всех сразу."
+};
+
+const QStringList DESKTOP_OVERHANG_HINT = {
+    "Enable the storm window to extend beyond the right or bottom edges of the desktop.",
+    "Ermöglichen Sie dem Sturmschutzfenster, über die rechten oder unteren Ränder des Desktops hinaus zu reichen.",
+    "Habilita la ventana de tormenta para que se extienda más allá de los bordes derecho o inferior del escritorio.",
+    "Activez la fenêtre pare-tempête pour qu'elle dépasse les bords droit ou inférieur du bureau.",
+    "Abilita la finestra di protezione in modo che si estenda oltre i bordi destro o inferiore del desktop.",
+    "ストームウィンドウをデスクトップの右端または下端を超えて拡張できるようにします。",
+    "Schakel het stormvenster in om voorbij de rechter- of onderste randen van het bureaublad uit te breiden.",
+    "Habilite a janela de tempestade para se estender além das bordas direita ou inferior da área de trabalho.",
+    "Включите функцию штормового окна, чтобы оно выходило за правый или нижний край рабочего стола."
+};
+
+const QStringList SHOW_PIN_ON_WINDOW_HOVER_HINT = {
+    "Enable or disable the Pin button icon when the storm window is hovered.",
+    "Aktivieren oder deaktivieren Sie das Pinn-Button-Symbol, wenn das Sturmfenster überfahren wird.",
+    "Habilitar o deshabilitar el icono del botón de fijar cuando se pasa el cursor sobre la ventana de tormenta.",
+    "Activer ou désactiver l'icône du bouton Épingler lorsque la fenêtre de tempête est survolée.",
+    "Abilitare o disabilitare l'icona del pulsante Pin quando la finestra temporale è passata sopra.",
+    "ストームウィンドウにカーソルを合わせたときにピンボタンのアイコンを有効または無効にします。",
+    "Schakel het pictogram van de Pin-knop in of uit wanneer het stormraam wordt zwevend.",
+    "Ative ou desative o ícone do botão Fixar quando a janela de tempestade estiver sendo sobrevoada.",
+    "Включение или отключение значка кнопки Закрепить при наведении курсора на штормовое окно."
+};
+
+const QStringList AUTOHIDE_CONTROLS_HINT = {
+    "Enable or disable automatic hide of the storm window corner control buttons after a delay.",
+    "Aktivieren oder deaktivieren Sie das automatische Ausblenden der Steuerelementschaltflächen in den Ecken des Sturmfensters nach einer Verzögerung.",
+    "Habilitar o deshabilitar el ocultamiento automático de los botones de control de la esquina de la ventana de tormenta después de un retraso.",
+    "Activer ou désactiver la disparition automatique des boutons de contrôle des coins de la fenêtre de tempête après un délai.",
+    "Abilita o disabilita la scomparsa automatica dei pulsanti di controllo degli angoli della finestra di tempesta dopo un ritardo.",
+    "遅延後に嵐窓の角のコントロールボタンを自動で非表示にする機能を有効または無効にします。",
+    "Schakel het automatisch verbergen van de bedieningsknoppen in de hoek van het stormvenster in of uit na een vertraging.",
+    "Ativar ou desativar a ocultação automática dos botões de controle do canto da janela de tempestade após um atraso.",
+    "Включить или отключить автоматическое скрытие кнопок управления углами шторного окна после задержки."
+};
+
+const QStringList AUTOHIDE_DELAY_HINT = {
+    "Select the delay for automatic hide of the storm window corner control buttons.",
+    "Wählen Sie die Verzögerung für das automatische Ausblenden der Ecksteuerungsknöpfe des Sturmfensters.",
+    "Seleccione el retraso para el ocultamiento automático de los botones de control de la esquina de la ventana contra tormentas.",
+    "Sélectionnez le délai pour la disparition automatique des boutons de contrôle des coins de la fenêtre de tempête.",
+    "Seleziona il ritardo per la scomparsa automatica dei pulsanti di controllo dell'angolo della finestra a protezione dalla tempesta.",
+    "ストームウィンドウのコーナーコントロールボタンを自動的に隠す遅延時間を選択してください。",
+    "Selecteer de vertraging voor het automatisch verbergen van de hoekknoppen van het stormraam.",
+    "Selecione o atraso para ocultação automática dos botões de controle do canto da janela de tempestade.",
+    "Выберите задержку для автоматического скрытия кнопок управления углом штормового окна."
+};
+
+const QStringList SHOW_SETTINGS_HINTS_HINT = {
+    "Enable or disable display of these settings descriptions on mouse hover.",
+    "Aktivieren oder deaktivieren Sie die Anzeige dieser Einstellungsbeschreibungen beim Überfahren mit der Maus.",
+    "Habilitar o deshabilitar la visualización de estas descripciones de configuración al pasar el ratón.",
+    "Activer ou désactiver l'affichage de la description de ces paramètres au survol de la souris.",
+    "Abilita o disabilita la visualizzazione di queste descrizioni delle impostazioni passando il mouse sopra.",
+    "マウスをホバーしたときにこれらの設定の説明を表示するかどうかを有効または無効にします。",
+    "Schakel de weergave van deze instellingenbeschrijvingen in of uit wanneer u met de muis zweeft.",
+    "Ativar ou desativar a exibição dessas descrições de configurações ao passar o mouse.",
+    "Включить или отключить отображение описаний этих настроек при наведении курсора мыши."
+};
+
+const QStringList SHOW_ICONS_ON_BUTTONS_HINT = {
+    "Enable or disable icon display in Dialog buttons.",
+    "Aktivieren oder deaktivieren Sie die Symbolanzeige in Dialogschaltflächen.",
+    "Habilitar o deshabilitar la visualización de iconos en los botones de diálogo.",
+    "Activer ou désactiver l'affichage des icônes dans les boutons de dialogue.",
+    "Abilita o disabilita la visualizzazione delle icone nei pulsanti di Dialogo.",
+    "ダイアログボタンでアイコンの表示を有効または無効にします。",
+    "Schakel het weergeven van pictogrammen in dialoogknoppen in of uit.",
+    "Ativar ou desativar a exibição de ícones nos botões de diálogo.",
+    "Включить или отключить отображение значков в кнопках диалога."
+};
+
+/**
+ * Slider Hints translations.
+ */
+const QStringList FLAKE_SIZE_HINTS_SET = {
+    "pixels", "Pixel", "píxeles", "pixels",
+    "pixel", "ピクセル", "pixels", "pixels", "пиксели"
+};
+
+const QStringList FLAKE_COUNT_HINTS_SET = {
+    "flakes", "Flocken", "copos", "flocons", "fiocchi",
+    "フレーク", "vlokken", "flocos", "хлопья"
 };
 
 /**
@@ -695,6 +1000,7 @@ const vector<QStringList> ALL_TRANSLATIONS = {
     TRANSLATION_SET_4,
     TRANSLATION_SET_5,
     TRANSLATION_SET_6,
+    WIND_STRENGTH_SET, WIND_LENGTH_SET, WIND_BURST_LENGTH_SET,
     TRANSLATION_SET_7,
     TRANSLATION_SET_8,
     TRANSLATION_SET_9,
@@ -715,12 +1021,12 @@ const vector<QStringList> ALL_TRANSLATIONS = {
     TRANSLATION_SET_24,
     TRANSLATION_SET_25,
     TRANSLATION_SET_26,
-    TRANSLATION_SET_27,
     TRANSLATION_SET_28,
     TRANSLATION_SET_29,
     TRANSLATION_SET_30,
     TRANSLATION_SET_31,
-    TRANSLATION_SET_32,
+    SECONDS_TRANSLATION_SET,
+    SECOND_TRANSLATION_SET,
     TRANSLATION_SET_33,
     TRANSLATION_SET_34,
     TRANSLATION_SET_35,
@@ -748,5 +1054,37 @@ const vector<QStringList> ALL_TRANSLATIONS = {
     TRANSLATION_SET_57,
     DISPLAY_PIN_ON_HOVER_SET,
     TRANSLATION_SET_59,
-    SHOW_ICONS_ON_BUTTONS_SET
+
+    SHOW_SETTINGS_HINTS,
+    SHOW_ICONS_ON_BUTTONS_SET,
+
+    /**
+     * Settings hints.
+     */
+    ALLOW_DESKTOP_DRAG_HINT,
+    APP_LANGUAGE_HINT,
+    AUTOHIDE_CONTROLS_HINT,
+    AUTOHIDE_DELAY_HINT,
+    WIND_STRENGTH_HINT_SET, WIND_LENGTH_HINT_SET,
+        WIND_BURST_LENGTH_HINT_SET,
+    BACKGROUND_COLOR_HINT,
+    BACKGROUND_OPACITY_HINT,
+    DESKTOP_OVERHANG_HINT,
+    FROSTEDFLAKES_COLOR_FOUR_HINT,
+    FROSTEDFLAKES_COLOR_ONE_HINT,
+    FROSTEDFLAKES_COLOR_THREE_HINT,
+    FROSTEDFLAKES_COLOR_TWO_HINT,
+    FROSTEDFLAKES_COUNT_HINT,
+    FROSTEDFLAKES_SIZE_HINT,
+    ON_TOP_INSTEAD_HINT,
+    PREFERRED_DESKTOP_HINT,
+    SHOW_ICONS_ON_BUTTONS_HINT,
+    SHOW_PIN_ON_WINDOW_HOVER_HINT,
+    SHOW_SETTINGS_HINTS_HINT,
+
+    /**
+     * Slider value hints.
+     */
+    FLAKE_SIZE_HINTS_SET,
+    FLAKE_COUNT_HINTS_SET
 };

@@ -4,10 +4,10 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-struct SaturationHints : public QObject {
+struct WindStrengthHints : public QObject {
 
     public:
-        SaturationHints(QSlider* slider) : QObject(slider),
+        WindStrengthHints(QSlider* slider) : QObject(slider),
             s(slider) {}
 
         bool eventFilter(QObject* o, QEvent* e) override {
@@ -15,8 +15,8 @@ struct SaturationHints : public QObject {
             // crosses into the slider.
             if (e->type() == QEvent::Enter) {
                 if (!s->isSliderDown()) {
-                    const int VALUE = s->value();
-                    const QString TOOLTIP_TEXT = QString::number(VALUE);
+                    const QString TOOLTIP_TEXT = QString::number(
+                        s->value());
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
                 return false;
@@ -26,8 +26,8 @@ struct SaturationHints : public QObject {
             if (e->type() == QEvent::ToolTip ||
                 e->type() == QEvent::MouseMove) {
                 if (!s->isSliderDown()) {
-                    const int VALUE = s->value();
-                    const QString TOOLTIP_TEXT = QString::number(VALUE);
+                    const QString TOOLTIP_TEXT = QString::number(
+                        s->value());
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
             }
@@ -40,6 +40,7 @@ struct SaturationHints : public QObject {
          * Members.
          */
         QSlider* s;
+
 };
 
 #pragma GCC diagnostic pop

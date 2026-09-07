@@ -75,13 +75,13 @@ class Canvas {
         /**
           * Routinely starts a new wind gust strength.
          */
-        void updateWindGustStrength();
+        void updateWindGustVelocity();
 
         /**
          * Routinely updates wind gust state (on / off), &
          * direction & duration.
          */
-        void updateWindGustDirectionAndTime(double currentTimeSeconds);
+        void updateWindGustDirAndDur(double currentTimeSeconds);
 
         /**
          * Provides a binary shader from app resources folder.
@@ -114,29 +114,32 @@ class Canvas {
         float mWindowCornerWidth{0.0f};
         float mWindowCornerHeight{0.0f};
 
+        // Assuming ~60 FPS (FRAME_TIME ≈ 0.0166s).
+        // Emulate STARTNEW_WIND_THREAD_TIME (every 1.0s).
+        const double FRAME_TIME = 1.0 / 60.0;
+        double mTotalAppTime = 0.0;
+
         // Wind.
-        const float MAX_WIND_STRENGTH = 500.0f;
-        const float INITIAL_WHIRL_STRENGTH = 150.0f;
+        bool mWindBlowing = false;
 
-        double mWhirlTimeSlider = 50.0;
-        double mWhirlStrengthSlider = 300.0;
+        int mWindDirection = 0;
+        double mWindDuration = 0.0;
 
-        double mWhirlStrength = 0.0;
-        double mWhirlStartTime = 50.0;
-        double mWhirlGustDuration = 50.0;
+        const float MAX_WIND_VELOCITY = 500.0f;
+        const float WHIRL_VELOCITY_FACTOR = 1.5f;
+        double mWhirlVelocity = 0.0;
+        float mWindVelocity = 0.0f;
 
-        bool   mPrevWindAvailable = false;
+        double mUpdateWindVelocityTimer = 0.0;
+        double mUpdateWindDirAndDurTimer = 0.0;
+
         double mPrevWindTime = 0.0;
+        bool mPrevWindTimeInited = false;
+        float mRollingWindXVelocity = 0.0f;
 
-        int    mWindEnabled = 0;
-        int    mWindDirection = 0;
-        float  mWindStrength = 100.0f;
-
-        float  mCurrentWindX = 0.0f;
-        double mStartNewWindTimer = 0.0;
-        double mUpdateWindTimer = 0.0;
-
-        // Storm canvas item vectors.
+        /**
+         * Storm canvas item vectors.
+         */
         vector<float> mFlakeVariation;
         vector<XRenderColor> mFlakeColor;
         vector<float> mFlakeRotation;
@@ -150,26 +153,26 @@ class Canvas {
         vector<float> mInitialSpeedY;
 
         // Vulkan Canvas Core Objects.
-        VkInstance mInstance{VK_NULL_HANDLE};
-        VkSurfaceKHR mSurface{VK_NULL_HANDLE};
+        VkInstance       mInstance{VK_NULL_HANDLE};
+        VkSurfaceKHR     mSurface{VK_NULL_HANDLE};
         VkPhysicalDevice mPhysicalDevice{VK_NULL_HANDLE};
-        VkDevice mDevice{VK_NULL_HANDLE};
-        VkQueue mGraphicsQueue{VK_NULL_HANDLE};
-        int mGraphicsQueueFamilyIndex{-1};
+        VkDevice         mDevice{VK_NULL_HANDLE};
+        VkQueue          mGraphicsQueue{VK_NULL_HANDLE};
+        int              mGraphicsQueueFamilyIndex{-1};
 
         // Vulkan Canvas Swapchain & Pipeline.
-        VkSwapchainKHR mSwapchain{VK_NULL_HANDLE};
-        vector<VkImage> mSwapchainImages;
+        VkSwapchainKHR      mSwapchain{VK_NULL_HANDLE};
+        vector<VkImage>     mSwapchainImages;
         vector<VkImageView> mSwapchainImageViews;
-        VkPipelineLayout mPipelineLayout{VK_NULL_HANDLE};
-        VkPipeline mGraphicsPipeline{VK_NULL_HANDLE};
-        VkShaderModule mVertShaderModule{VK_NULL_HANDLE};
-        VkShaderModule mFragShaderModule{VK_NULL_HANDLE};
+        VkPipelineLayout    mPipelineLayout{VK_NULL_HANDLE};
+        VkPipeline          mGraphicsPipeline{VK_NULL_HANDLE};
+        VkShaderModule      mVertShaderModule{VK_NULL_HANDLE};
+        VkShaderModule      mFragShaderModule{VK_NULL_HANDLE};
 
         // Vulkan Canvas Command Buffers & Sync.
-        VkCommandPool mCommandPool{VK_NULL_HANDLE};
+        VkCommandPool   mCommandPool{VK_NULL_HANDLE};
         VkCommandBuffer mCommandBuffer{VK_NULL_HANDLE};
-        VkSemaphore mImageAvailableSemaphore{VK_NULL_HANDLE};
-        VkSemaphore mRenderFinishedSemaphore{VK_NULL_HANDLE};
-        VkFence mInFlightFence{VK_NULL_HANDLE};
+        VkSemaphore     mImageAvailableSemaphore{VK_NULL_HANDLE};
+        VkSemaphore     mRenderFinishedSemaphore{VK_NULL_HANDLE};
+        VkFence         mInFlightFence{VK_NULL_HANDLE};
 };

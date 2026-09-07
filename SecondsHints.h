@@ -4,10 +4,10 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-struct MaxStarSizeHints : public QObject {
+struct SecondsHints : public QObject {
 
     public:
-        MaxStarSizeHints(QSlider* slider) : QObject(slider),
+        SecondsHints(QSlider* slider) : QObject(slider),
             s(slider) {}
 
         bool eventFilter(QObject* o, QEvent* e) override {
@@ -16,8 +16,10 @@ struct MaxStarSizeHints : public QObject {
             if (e->type() == QEvent::Enter) {
                 if (!s->isSliderDown()) {
                     const int VALUE = s->value();
+                    const QString I18N_TIME = (VALUE == 1) ?
+                        I18N("second") : I18N("seconds");
                     const QString TOOLTIP_TEXT = QString::number(VALUE) +
-                        " " + I18N("pixels");
+                        " " + I18N_TIME;
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
                 return false;
@@ -28,8 +30,10 @@ struct MaxStarSizeHints : public QObject {
                 e->type() == QEvent::MouseMove) {
                 if (!s->isSliderDown()) {
                     const int VALUE = s->value();
+                    const QString I18N_TIME = (VALUE == 1) ?
+                        I18N("second") : I18N("seconds");
                     const QString TOOLTIP_TEXT = QString::number(VALUE) +
-                        " " + I18N("pixels");
+                        " " + I18N_TIME;
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT, s);
                 }
             }
