@@ -14,7 +14,7 @@ set(APP_NAME "StorminNormin")
 set(APP_DESC "A falling drifting stormy field that")
 set(APP_DESC "${APP_DESC} mesmerizes on your desktop.")
 
-set(APP_VERSION "26.09.06")
+set(APP_VERSION "26.09.07")
 set(APP_VERSION_MINOR "00")
 
 set(APP_AUTHOR "Mark James Capella")
