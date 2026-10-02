@@ -792,7 +792,9 @@ ConfigDialog::sendConfigDialogUpdatedEvent(
  */
 void
 ConfigDialog::showAboutDialog() {
-
     mAboutDialog = new AboutDialog(this);
+
     mAboutDialog->show();
+    mAboutDialog->raise();
+    mAboutDialog->activateWindow();
 }
