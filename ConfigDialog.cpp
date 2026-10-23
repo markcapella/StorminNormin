@@ -11,6 +11,8 @@
  * Simple class to represent a ConfigDialog.
  */
 ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
+
+    // Set the window attributes.
     setWindowFlags(Qt::Dialog | Qt::Tool);
     resize(CONFIG_DIALOG_WIDTH, CONFIG_DIALOG_HEIGHT);
     setFixedSize(size());
@@ -26,22 +28,52 @@ ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
     TITLE += " " + I18N("Settings");
     setWindowTitle(QString(TITLE));
 
-    // Set the window attributes, create controls & center.
+    // Init tab-row getters/setters.
+    initFormRowGetterSetters();
+
+    // Create dialog, forms, & controls.
+    mSnowFlakesForm = new QFormLayout();
+    mSnowFlakesForm->setContentsMargins(0, FORM_TOP_BOTTOM_SPACING,
+        0, FORM_TOP_BOTTOM_SPACING);
+    mSnowFlakesForm->setVerticalSpacing(FORM_LAYOUT_ROW_SPACING);
+
+    mAdvancedForm = new QFormLayout();
+    mAdvancedForm->setContentsMargins(0, FORM_TOP_BOTTOM_SPACING,
+        0, FORM_TOP_BOTTOM_SPACING);
+    mAdvancedForm->setVerticalSpacing(FORM_LAYOUT_ROW_SPACING);
+
     createConfigDialog();
-    mFormLayout->setFormAlignment(Qt::AlignCenter);
 
     // Add the formlayout to a formcontainer.
-    QWidget* formContainer = new QWidget(this);
-    formContainer->setLayout(mFormLayout);
-
     // Add the formcontainer to a scrollarea.
-    QScrollArea* scrollArea = new QScrollArea(this);
-    scrollArea->setWidget(formContainer);
-    scrollArea->setWidgetResizable(true);
+    QWidget* snowFlakesFormContainer = new QWidget(this);
+    mSnowFlakesForm->setFormAlignment(Qt::AlignCenter);
+    snowFlakesFormContainer->setLayout(mSnowFlakesForm);
+
+    QScrollArea* snowFlakesScrollArea = new QScrollArea(this);
+    snowFlakesScrollArea->setWidgetResizable(true);
+    snowFlakesScrollArea->setWidget(snowFlakesFormContainer);
+
+    // Add the formlayout to a formcontainer.
+    // Add the formcontainer to a scrollarea.
+    QWidget* advancedFormContainer = new QWidget(this);
+    mAdvancedForm->setFormAlignment(Qt::AlignCenter);
+    advancedFormContainer->setLayout(mAdvancedForm);
+
+    QScrollArea* advancedScrollArea = new QScrollArea(this);
+    advancedScrollArea->setWidgetResizable(true);
+    advancedScrollArea->setWidget(advancedFormContainer);
 
     // The whole thing wraps up into vbox layout.
+    mTabWidget = new QTabWidget(this);
+
+    mTabWidget->addTab(snowFlakesScrollArea,
+        I18N(SettingsHelper::SNOW_FLAKES_TABNAME));
+    mTabWidget->addTab(advancedScrollArea,
+        I18N(SettingsHelper::ADVANCED_TABNAME));
+
     mMainLayout = new QVBoxLayout(this);
-    mMainLayout->addWidget(scrollArea);
+    mMainLayout->addWidget(mTabWidget);
 
     // Create all buttons for the layout.
     mResetButton = new QPushButton(I18N("Reset"), this);
@@ -104,6 +136,115 @@ ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
 }
 
 /**
+ * Init per-tab Form-Row Helper getters and setters. These
+ * get & set Settings by row in each of the Dialog tab-forms.
+ */
+void
+ConfigDialog::initFormRowGetterSetters() {
+
+    mSnowFlakesRowCount = 0;
+    mAdvancedFormRowCount = 0;
+
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
+        const SettingsHelper::SettingsProperty THIS_SETTING =
+            SettingsHelper::PROPERTIES[row];
+
+        if (THIS_SETTING.tabname == SettingsHelper::SNOW_FLAKES_TABNAME) {
+            mSnowFlakesRowCount++;
+            continue;
+        }
+
+        if (THIS_SETTING.tabname == SettingsHelper::ADVANCED_TABNAME) {
+            mAdvancedFormRowCount++;
+        }
+    }
+}
+
+/**
+ * This helper called from createConfigDialog() adds a setting
+ * Edit Widget or a Divider to the form that contains the row #.
+ */
+void
+ConfigDialog::addFormRow(const int row, const QString key,
+    QWidget* widget) {
+
+    if (row < mSnowFlakesRowCount) {
+        mSnowFlakesForm->addRow(key, widget);
+        return;
+    }
+
+    const int MAYBE_ADVANCED_ROW = row - mSnowFlakesRowCount;
+    if (MAYBE_ADVANCED_ROW < mAdvancedFormRowCount) {
+        mAdvancedForm->addRow(key, widget);
+    }
+}
+
+/**
+ * This helper called from createConfigDialog() is used to
+ * provide translated floating hints for settings in each row.
+ */
+QWidget*
+ConfigDialog::getLabelWidgetFromFormRow(QWidget* widget,
+    const int row) {
+
+    if (row < mSnowFlakesRowCount) {
+        return mSnowFlakesForm->labelForField(widget);
+    }
+
+    const int MAYBE_ADVANCED_ROW = row - mSnowFlakesRowCount;
+    if (MAYBE_ADVANCED_ROW < mAdvancedFormRowCount) {
+        return mAdvancedForm->labelForField(widget);
+    }
+
+    return nullptr;
+}
+
+/**
+ * This helper called from loadConfigDialog(),
+ * loadConfigDialogWithDefaults() & acceptConfigDialog()
+ * retrieves an Edit Widget from the form that contains the
+ * row #, for inspection and modification.
+ */
+QWidget*
+ConfigDialog::getFieldRoleWidgetFromFormRow(const int row) {
+
+    if (row < mSnowFlakesRowCount) {
+        return mSnowFlakesForm->
+            itemAt(row, QFormLayout::FieldRole)->widget();
+    }
+
+    const int MAYBE_ADVANCED_ROW = row - mSnowFlakesRowCount;
+    if (MAYBE_ADVANCED_ROW < mAdvancedFormRowCount) {
+        return mAdvancedForm->
+            itemAt(MAYBE_ADVANCED_ROW, QFormLayout::FieldRole)->widget();
+    }
+
+    return nullptr;
+}
+
+/**
+ * This helper called from translateConfigDialog() is used to
+ * change displayed text of an Edit Widget from the form that
+ * contains the row # when user changes preferred app language.
+ */
+QLayoutItem*
+ConfigDialog::getLabelRoleLayoutFromFormRow(const int row) {
+
+    if (row < mSnowFlakesRowCount) {
+        return mSnowFlakesForm->
+            itemAt(row, QFormLayout::LabelRole);
+    }
+
+    const int MAYBE_ADVANCED_ROW = row - mSnowFlakesRowCount;
+    if (MAYBE_ADVANCED_ROW < mAdvancedFormRowCount) {
+        return mAdvancedForm->
+            itemAt(MAYBE_ADVANCED_ROW, QFormLayout::LabelRole);
+    }
+
+    return nullptr;
+}
+
+/**
  * Translate Settings to desired language for display.
  */
 void
@@ -119,32 +260,31 @@ ConfigDialog::translateConfigDialog() {
     TITLE += " " + I18N("Settings");
     setWindowTitle(QString(TITLE));
 
-    const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
-
-    for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[i];
-
-        const QString THIS_KEY = THIS_SETTING.name;
-        const SettingsPropertyType THIS_VALUETYPE =
-            THIS_SETTING.valueType;
+            SettingsHelper::PROPERTIES[row];
 
         // Ignore Divider lines.
-        if (THIS_VALUETYPE == DIVIDER_VALUETYPE) {
+        if (THIS_SETTING.valueType == DIVIDER_VALUETYPE) {
             continue;
         }
 
-        const QLayoutItem* ROW = mFormLayout->itemAt(
-            i, QFormLayout::LabelRole);
+        // All others get re-translated.
+        const QLayoutItem* ROW = getLabelRoleLayoutFromFormRow(row);
         if (ROW) {
             QLabel* label = qobject_cast<QLabel*>(ROW->widget());
             if (label) {
-                const QString VALUE = I18N(THIS_KEY);
+                const QString VALUE = I18N(THIS_SETTING.name);
                 label->setText(VALUE);
             }
         }
     }
 
+    // Retranslate tab titles.
+    mTabWidget->setTabText(0, I18N(SettingsHelper::SNOW_FLAKES_TABNAME));
+    mTabWidget->setTabText(1, I18N(SettingsHelper::ADVANCED_TABNAME));
+
+    // Retranslate & reset controls.
     mResetButton->setText(I18N("Reset"));
     mAboutButton->setText(I18N("About"));
     mOkButton->setText(I18N("Ok"));
@@ -163,14 +303,14 @@ ConfigDialog::translateConfigDialog() {
  */
 void
 ConfigDialog::loadConfigDialog() {
-    const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
 
-    for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[i];
+            SettingsHelper::PROPERTIES[row];
+
+        const QString THIS_TABNAME = THIS_SETTING.tabname;
         const QString THIS_KEY = THIS_SETTING.name;
-        const SettingsPropertyType THIS_VALUETYPE =
-            THIS_SETTING.valueType;
+        const SettingsPropertyType THIS_VALUETYPE = THIS_SETTING.valueType;
         const QString THIS_DEFAULT_VALUE = THIS_SETTING.initialValue;
 
         // Ignore Divider lines.
@@ -180,9 +320,8 @@ ConfigDialog::loadConfigDialog() {
 
         // Get QCheckBox for Booleans.
         if (THIS_VALUETYPE == BOOL_VALUETYPE) {
-            QCheckBox* checkboxWidget = nullptr;
-            checkboxWidget = qobject_cast<QCheckBox*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QCheckBox* checkboxWidget = qobject_cast<QCheckBox*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (checkboxWidget) {
                 const QString VALUE = mSettingsHelper->getQSettings()->
                     value(THIS_KEY, THIS_DEFAULT_VALUE).toString();
@@ -194,9 +333,8 @@ ConfigDialog::loadConfigDialog() {
 
         // Get QSlider for Sliders.
         if (THIS_VALUETYPE == SLIDER_VALUETYPE) {
-            QSlider* sliderEditWidget = nullptr;
-            sliderEditWidget = qobject_cast<QSlider*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QSlider* sliderEditWidget = qobject_cast<QSlider*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (sliderEditWidget) {
                 sliderEditWidget->setMinimum(mSettingsHelper->
                     getSettingsIntRangeMinimum(THIS_KEY));
@@ -211,9 +349,8 @@ ConfigDialog::loadConfigDialog() {
 
         // Get QColorButton for Colors.
         if (THIS_VALUETYPE == COLOR_VALUETYPE) {
-            ColorButton* colorButtonWidget = nullptr;
-            colorButtonWidget = qobject_cast<ColorButton*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            ColorButton* colorButtonWidget = qobject_cast<ColorButton*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (colorButtonWidget) {
                 const QString VALUE = mSettingsHelper->getQSettings()->
                     value(THIS_KEY, THIS_DEFAULT_VALUE).toString();
@@ -225,9 +362,8 @@ ConfigDialog::loadConfigDialog() {
         // Get QComboBox for Language.
         if (THIS_VALUETYPE == COMBOBOX_VALUETYPE &&
             THIS_KEY == SettingsHelper::APP_LANGUAGE) {
-            QComboBox* langComboWidget = nullptr;
-            langComboWidget = qobject_cast<QComboBox*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QComboBox* langComboWidget = qobject_cast<QComboBox*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (langComboWidget) {
                 const QString LANG = mSettingsHelper->
                     getStringSetting(SettingsHelper::APP_LANGUAGE);
@@ -248,14 +384,13 @@ ConfigDialog::loadConfigDialog() {
  */
 void
 ConfigDialog::loadConfigDialogWithDefaults() {
-    const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
 
-    for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[i];
+            SettingsHelper::PROPERTIES[row];
+
         const QString THIS_KEY = THIS_SETTING.name;
-        const SettingsPropertyType THIS_VALUETYPE =
-            THIS_SETTING.valueType;
+        const SettingsPropertyType THIS_VALUETYPE = THIS_SETTING.valueType;
         const QString THIS_DEFAULT_VALUE = THIS_SETTING.initialValue;
 
         // Ignore Divider lines.
@@ -265,9 +400,8 @@ ConfigDialog::loadConfigDialogWithDefaults() {
 
         // Get QCheckBox for Booleans.
         if (THIS_VALUETYPE == BOOL_VALUETYPE) {
-            QCheckBox* checkboxWidget = nullptr;
-            checkboxWidget = qobject_cast<QCheckBox*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QCheckBox* checkboxWidget = qobject_cast<QCheckBox*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (checkboxWidget) {
                 checkboxWidget->setCheckState(
                     THIS_DEFAULT_VALUE == "true" ?
@@ -278,9 +412,8 @@ ConfigDialog::loadConfigDialogWithDefaults() {
 
         // Get QSliders.
         if (THIS_VALUETYPE == SLIDER_VALUETYPE) {
-            QSlider* sliderEditWidget = nullptr;
-            sliderEditWidget = qobject_cast<QSlider*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QSlider* sliderEditWidget = qobject_cast<QSlider*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (sliderEditWidget) {
                 sliderEditWidget->setSliderPosition(
                     THIS_DEFAULT_VALUE.toInt());
@@ -290,9 +423,8 @@ ConfigDialog::loadConfigDialogWithDefaults() {
 
         // Get QColorButton for Colors.
         if (THIS_VALUETYPE == COLOR_VALUETYPE) {
-            ColorButton* colorButtonWidget = nullptr;
-            colorButtonWidget = qobject_cast<ColorButton*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            ColorButton* colorButtonWidget = qobject_cast<ColorButton*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (colorButtonWidget) {
                 colorButtonWidget->setButtonColor(
                     QColor(THIS_DEFAULT_VALUE));
@@ -303,9 +435,8 @@ ConfigDialog::loadConfigDialogWithDefaults() {
         // Get QComboBox for Language.
         if (THIS_VALUETYPE == COMBOBOX_VALUETYPE &&
             THIS_KEY == SettingsHelper::APP_LANGUAGE) {
-            QComboBox* langComboWidget = nullptr;
-            langComboWidget = qobject_cast<QComboBox*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QComboBox* langComboWidget = qobject_cast<QComboBox*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (langComboWidget) {
                 const int LANG_INDEX = ALL_LANGUAGES.indexOf(
                     THIS_DEFAULT_VALUE);
@@ -324,20 +455,16 @@ ConfigDialog::loadConfigDialogWithDefaults() {
  */
 void
 ConfigDialog::updateConfigDialog() {
-    const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
 
-    for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[i];
-        const QString THIS_KEY = THIS_SETTING.name;
-        const SettingsPropertyType THIS_VALUETYPE =
-            THIS_SETTING.valueType;
+            SettingsHelper::PROPERTIES[row];
 
         // Reset desktop preference slider for 2 reasons.
-        if (THIS_KEY == SettingsHelper::PREFERRED_DESKTOP) {
+        if (THIS_SETTING.name == SettingsHelper::PREFERRED_DESKTOP) {
             QSlider* sliderEditWidget = nullptr;
-            sliderEditWidget = qobject_cast<QSlider*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            sliderEditWidget = qobject_cast<QSlider*>(mAdvancedForm->
+                itemAt(row, QFormLayout::FieldRole)->widget());
             if (sliderEditWidget) {
                 // Reset preferred desktop slider range maximum
                 // as OS can change max desktops while dialog open.
@@ -355,7 +482,7 @@ ConfigDialog::updateConfigDialog() {
                     mSettingsHelper->SettingsHelper::PREFERRED_DESKTOP);
                 if (SLIDER_CURRENT != VALUE_CURRENT) {
                     sliderEditWidget->setSliderPosition(VALUE_CURRENT);
-                    mSettingChanges[i] = false;
+                    mSettingChanges[row] = false;
                     const bool APPLY_BUTTON_ENABLED =
                         mSettingChanges.contains(true);
                     mApplyButton->setEnabled(APPLY_BUTTON_ENABLED);
@@ -370,22 +497,14 @@ ConfigDialog::updateConfigDialog() {
  */
 void
 ConfigDialog::createConfigDialog() {
-    // Build form.
-    mFormLayout = new QFormLayout();
-    mFormLayout->setContentsMargins(0, FORM_TOP_BOTTOM_SPACING,
-        0, FORM_TOP_BOTTOM_SPACING);
-    mFormLayout->setVerticalSpacing(FORM_LAYOUT_ROW_SPACING);
 
-    const int SETTINGS_SIZE = SettingsHelper::PROPERTIES.size();
-
-    for (int i = 0; i < SETTINGS_SIZE; i++) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[i];
+            SettingsHelper::PROPERTIES[row];
 
         const QString THIS_KEY = THIS_SETTING.name;
         const QString THIS_HINT = THIS_SETTING.hint;
-        const SettingsPropertyType THIS_VALUETYPE =
-            THIS_SETTING.valueType;
+        const SettingsPropertyType THIS_VALUETYPE = THIS_SETTING.valueType;
         const QString I18N_DISPLAY_KEY = I18N(THIS_KEY);
 
         // Get QLineEdit for Divider lines.
@@ -395,7 +514,7 @@ ConfigDialog::createConfigDialog() {
             const int SLIDER_HEIGHT_VALUE = mSettingsHelper->
                 getIntSetting(THIS_KEY);
             dividerWidget->setFixedHeight(SLIDER_HEIGHT_VALUE);
-            mFormLayout->addRow("", dividerWidget);
+            addFormRow(row, "", dividerWidget);
             continue;
         }
 
@@ -403,14 +522,14 @@ ConfigDialog::createConfigDialog() {
         if (THIS_VALUETYPE == BOOL_VALUETYPE) {
             QCheckBox* checkboxWidget = new QCheckBox(this);
             checkboxWidget->setObjectName(THIS_KEY);
-            mFormLayout->addRow(I18N_DISPLAY_KEY, checkboxWidget);
+            addFormRow(row, I18N_DISPLAY_KEY, checkboxWidget);
             connect(checkboxWidget, &QCheckBox::toggled,
-                this, [this, i] (bool checked) {
-                mSettingChanges[i] = true;
+                this, [this, row] (bool checked) {
+                mSettingChanges[row] = true;
                 mApplyButton->setEnabled(true);
             });
             QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                (mFormLayout->labelForField(checkboxWidget));
+                (getLabelWidgetFromFormRow(checkboxWidget, row));
             if (HINT_LABEL) {
                 HINT_LABEL->installEventFilter(
                     new SettingsDescriptionHints(this, THIS_HINT));
@@ -423,14 +542,14 @@ ConfigDialog::createConfigDialog() {
             ColorButton* colorButtonWidget = new ColorButton(
                 THIS_KEY, this);
             colorButtonWidget->setObjectName(THIS_KEY);
-            mFormLayout->addRow(I18N_DISPLAY_KEY, colorButtonWidget);
+            addFormRow(row, I18N_DISPLAY_KEY, colorButtonWidget);
             connect(colorButtonWidget, &ColorButton::colorChanged,
-                this, [this, i] (const QColor &color) {
-                mSettingChanges[i] = true;
+                this, [this, row] (const QColor &color) {
+                mSettingChanges[row] = true;
                 mApplyButton->setEnabled(true);
             });
             QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                (mFormLayout->labelForField(colorButtonWidget));
+                (getLabelWidgetFromFormRow(colorButtonWidget, row));
             if (HINT_LABEL) {
                 HINT_LABEL->installEventFilter(
                     new SettingsDescriptionHints(this, THIS_HINT));
@@ -443,23 +562,23 @@ ConfigDialog::createConfigDialog() {
             QSlider* sliderEditWidget = new QSlider(Qt::Horizontal, this);
             sliderEditWidget->setObjectName(THIS_KEY);
             sliderEditWidget->setFixedWidth(160);
-            mFormLayout->addRow(I18N_DISPLAY_KEY, sliderEditWidget);
+            addFormRow(row, I18N_DISPLAY_KEY, sliderEditWidget);
 
             // Nice tooltip on slow hover.
             if (THIS_KEY == SettingsHelper::AUTOHIDE_DELAY) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     const QString I18N_TIME = (value == 1) ?
                         I18N("second") : I18N("seconds");
                     const QString TOOLTIP_TEXT = QString::number(value) +
                         " " + I18N_TIME;
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -475,7 +594,7 @@ ConfigDialog::createConfigDialog() {
                 sliderEditWidget->setTickPosition(QSlider::TicksBelow);
                 sliderEditWidget->setStyle(QStyleFactory::create("Fusion"));
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     // Use the calculated center of the slider for
                     // ToolTip, as updates happen during window drag and
                     // pointer is nowhere near the slider at that point.
@@ -488,11 +607,11 @@ ConfigDialog::createConfigDialog() {
                         QString::number(value + 1);
                     QToolTip::showText(GLOBAL_POSITION, TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -504,15 +623,15 @@ ConfigDialog::createConfigDialog() {
 
             if (THIS_KEY == SettingsHelper::WIND_STRENGTH) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     const QString TOOLTIP_TEXT = QString::number(value);
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -525,18 +644,18 @@ ConfigDialog::createConfigDialog() {
             if (THIS_KEY == SettingsHelper::WIND_LENGTH ||
                 THIS_KEY == SettingsHelper::WIND_BURST_LENGTH) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     const QString I18N_TIME = (value == 1) ?
                         I18N("second") : I18N("seconds");
                     const QString TOOLTIP_TEXT = QString::number(value) +
                         " " + I18N_TIME;
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -548,17 +667,17 @@ ConfigDialog::createConfigDialog() {
 
             if (THIS_KEY == SettingsHelper::BACKGROUND_OPACITY) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     const int VALUE_PCT = 100 * value / 255;
                     const QString TOOLTIP_TEXT =
                         QString::number(VALUE_PCT) + "%";
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -568,18 +687,18 @@ ConfigDialog::createConfigDialog() {
                 continue;
             }
 
-            if (THIS_KEY == SettingsHelper::FROSTEDFLAKES_COUNT) {
+            if (THIS_KEY == SettingsHelper::SNOW_FLAKES_COUNT) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     const QString TOOLTIP_TEXT = QString::number(value) +
                         " " + I18N("flakes");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -589,18 +708,18 @@ ConfigDialog::createConfigDialog() {
                 continue;
             }
 
-            if (THIS_KEY == SettingsHelper::FROSTEDFLAKES_SIZE) {
+            if (THIS_KEY == SettingsHelper::SNOW_FLAKES_SIZE) {
                 connect(sliderEditWidget, &QSlider::valueChanged,
-                    this, [this, i, sliderEditWidget] (int value) {
+                    this, [this, row, sliderEditWidget] (int value) {
                     const QString TOOLTIP_TEXT = QString::number(value) +
                         " " + I18N("pixels");
                     QToolTip::showText(QCursor::pos(), TOOLTIP_TEXT,
                         sliderEditWidget);
-                    mSettingChanges[i] = true;
+                    mSettingChanges[row] = true;
                     mApplyButton->setEnabled(true);
                 });
                 QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                    (mFormLayout->labelForField(sliderEditWidget));
+                    (getLabelWidgetFromFormRow(sliderEditWidget, row));
                 if (HINT_LABEL) {
                     HINT_LABEL->installEventFilter(
                         new SettingsDescriptionHints(this, THIS_HINT));
@@ -619,14 +738,14 @@ ConfigDialog::createConfigDialog() {
                 langComboWidget));
             langComboWidget->addItems(ALL_LANGUAGES);
             langComboWidget->setObjectName(THIS_KEY);
-            mFormLayout->addRow(I18N_DISPLAY_KEY, langComboWidget);
-            connect(langComboWidget,&QComboBox::currentIndexChanged,
-                this, [this, i] (int index) {
-                mSettingChanges[i] = true;
+            addFormRow(row, I18N_DISPLAY_KEY, langComboWidget);
+            connect(langComboWidget, &QComboBox::currentIndexChanged,
+                this, [this, row] (int index) {
+                mSettingChanges[row] = true;
                 mApplyButton->setEnabled(true);
             });
             QLabel* HINT_LABEL = qobject_cast<QLabel*>
-                (mFormLayout->labelForField(langComboWidget));
+                (getLabelWidgetFromFormRow(langComboWidget, row));
             if (HINT_LABEL) {
                 HINT_LABEL->installEventFilter(
                     new SettingsDescriptionHints(this, THIS_HINT));
@@ -655,14 +774,12 @@ ConfigDialog::acceptConfigDialog() {
         return;
     }
 
-    const int FORM_LAYOUT_SIZE = mFormLayout->rowCount();
-
-    for (int i = 0; i < FORM_LAYOUT_SIZE; ++i) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[i];
+            SettingsHelper::PROPERTIES[row];
+
         const QString THIS_KEY = THIS_SETTING.name;
-        const SettingsPropertyType THIS_VALUETYPE =
-            THIS_SETTING.valueType;
+        const SettingsPropertyType THIS_VALUETYPE = THIS_SETTING.valueType;
 
         // Ignore Divider lines.
         if (THIS_VALUETYPE == DIVIDER_VALUETYPE) {
@@ -671,9 +788,8 @@ ConfigDialog::acceptConfigDialog() {
 
         // Get QCheckBox for Booleans.
         if (THIS_VALUETYPE == BOOL_VALUETYPE) {
-            QCheckBox* checkboxWidget = nullptr;
-            checkboxWidget = qobject_cast<QCheckBox*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QCheckBox* checkboxWidget = qobject_cast<QCheckBox*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (checkboxWidget) {
                 const bool VALUE = checkboxWidget->checkState();
                 mSettingsHelper->getQSettings()->
@@ -684,9 +800,8 @@ ConfigDialog::acceptConfigDialog() {
 
         // Get QColorButton for Colors.
         if (THIS_VALUETYPE == COLOR_VALUETYPE) {
-            ColorButton* colorButtonWidget = nullptr;
-            colorButtonWidget = qobject_cast<ColorButton*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            ColorButton* colorButtonWidget = qobject_cast<ColorButton*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (colorButtonWidget) {
                 const QString VALUE = colorButtonWidget->
                     getButtonColor().name();
@@ -698,9 +813,8 @@ ConfigDialog::acceptConfigDialog() {
 
         // Get QSlider for preferredDesktop.
         if (THIS_VALUETYPE == SLIDER_VALUETYPE) {
-            QSlider* sliderEditWidget = nullptr;
-            sliderEditWidget = qobject_cast<QSlider*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QSlider* sliderEditWidget = qobject_cast<QSlider*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (sliderEditWidget) {
                 const int VALUE = sliderEditWidget->value();
                 mSettingsHelper->setIntSetting(THIS_KEY, VALUE);
@@ -711,9 +825,8 @@ ConfigDialog::acceptConfigDialog() {
         // Get QComboBox for Language.
         if (THIS_VALUETYPE == COMBOBOX_VALUETYPE &&
             THIS_KEY == SettingsHelper::APP_LANGUAGE) {
-            QComboBox* langComboWidget = nullptr;
-            langComboWidget = qobject_cast<QComboBox*>(mFormLayout->
-                itemAt(i, QFormLayout::FieldRole)->widget());
+            QComboBox* langComboWidget = qobject_cast<QComboBox*>
+                (getFieldRoleWidgetFromFormRow(row));
             if (langComboWidget) {
                 const QString VALUE = langComboWidget->currentText();
                 mSettingsHelper->setStringSetting(THIS_KEY, VALUE);
@@ -727,14 +840,13 @@ ConfigDialog::acceptConfigDialog() {
     // a setting in the PROPERTIES list before the LANGUAGE setting
     // appears in the Dialog will force a canvas redraw.
     bool canvasNeedsRedraw = false;
-    const int SETTINGS_SIZE = SettingsHelper::PROPERTIES.size();
-    for (int index = 0; index < SETTINGS_SIZE; index++) {
+    for (int row = 0; row < SettingsHelper::PROPERTIES.size(); row++) {
         const SettingsHelper::SettingsProperty THIS_SETTING =
-            SettingsHelper::PROPERTIES[index];
+            SettingsHelper::PROPERTIES[row];
         if (THIS_SETTING.name == SettingsHelper::APP_LANGUAGE) {
             break;
         }
-        if (mSettingChanges[index] == true) {
+        if (mSettingChanges[row] == true) {
             canvasNeedsRedraw = true;
             break;
         }

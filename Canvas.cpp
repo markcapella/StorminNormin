@@ -30,28 +30,28 @@ Canvas::initCanvas() {
     mCanvasHeight = mSettingsHelper->getCanvasHeight();
 
     const XRenderColor FLAKE_COLOR_ONE = mSettingsHelper->
-        getColorSetting(SettingsHelper::FROSTEDFLAKES_COLOR_ONE);
+        getColorSetting(SettingsHelper::SNOW_FLAKES_COLOR_ONE);
     mFlakeColors[0] = FLAKE_COLOR_ONE;
 
     const XRenderColor FLAKE_COLOR_TWO = mSettingsHelper->
-        getColorSetting(SettingsHelper::FROSTEDFLAKES_COLOR_TWO);
+        getColorSetting(SettingsHelper::SNOW_FLAKES_COLOR_TWO);
     mFlakeColors[1] = FLAKE_COLOR_TWO;
 
     const XRenderColor FLAKE_COLOR_THREE = mSettingsHelper->
-        getColorSetting(SettingsHelper::FROSTEDFLAKES_COLOR_THREE);
+        getColorSetting(SettingsHelper::SNOW_FLAKES_COLOR_THREE);
     mFlakeColors[2] = FLAKE_COLOR_THREE;
 
     const XRenderColor FLAKE_COLOR_FOUR = mSettingsHelper->
-        getColorSetting(SettingsHelper::FROSTEDFLAKES_COLOR_FOUR);
+        getColorSetting(SettingsHelper::SNOW_FLAKES_COLOR_FOUR);
     mFlakeColors[3] = FLAKE_COLOR_FOUR;
 
     mStormItemCount = (float) mSettingsHelper->getIntSetting(
-        SettingsHelper::FROSTEDFLAKES_COUNT);
+        SettingsHelper::SNOW_FLAKES_COUNT);
 
     mFlakeRadiusX = (mSettingsHelper->getIntSetting(SettingsHelper::
-        FROSTEDFLAKES_SIZE) + 1) / static_cast<float>(mCanvasWidth);
+        SNOW_FLAKES_SIZE) + 1) / static_cast<float>(mCanvasWidth);
     mFlakeRadiusY = (mSettingsHelper->getIntSetting(SettingsHelper::
-        FROSTEDFLAKES_SIZE) + 1) / static_cast<float>(mCanvasHeight);
+        SNOW_FLAKES_SIZE) + 1) / static_cast<float>(mCanvasHeight);
 
     mWindowCornerWidth = 2.0f * (Button::BUTTON_WIDTH /
         static_cast<float>(mCanvasWidth));
@@ -519,13 +519,14 @@ Canvas::uninitCanvas() {
 /**
 * Draw the canvas and all storm items.
  */
-void
+bool
 Canvas::drawCanvas() {
     // Init on first draw. Careful, it can fail.
     if (!mInitialized) {
         initCanvas();
         if (!mInitialized) {
-            return;
+            // Terminate.
+            return false;
         }
     }
 
@@ -634,14 +635,56 @@ Canvas::drawCanvas() {
         }
     }
 
-    // Render frame.
-    vkWaitForFences(mDevice, 1, &mInFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(mDevice, 1, &mInFlightFence);
+    // Render frame, after wait for timeout value of 5 seconds.
+    const unsigned long long FENCE_TIMEOUT_NS = 5'000'000'000ULL;
+    const VkResult WAIT_FENCE_RESULT = vkWaitForFences(mDevice, 1,
+        &mInFlightFence, VK_TRUE, FENCE_TIMEOUT_NS);
+    if (WAIT_FENCE_RESULT == VK_TIMEOUT) {
+        // Ignore.
+        return true;
+    }
+    if (WAIT_FENCE_RESULT != VK_SUCCESS) {
+        // Warn.
+        cout << "StorminNormin: vkWaitForFences failed: " <<
+            WAIT_FENCE_RESULT << "." << endl;
+        return true;
+    }
 
-    uint32_t imageIndex;
-    vkAcquireNextImageKHR(mDevice, mSwapchain, UINT64_MAX,
-        mImageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+    // Acquire a swapchain image, with a finite timeout.
+    uint32_t imageIndex = 0;
+    const VkResult ACQUIRE_RESULT = vkAcquireNextImageKHR(mDevice,
+        mSwapchain, FENCE_TIMEOUT_NS, mImageAvailableSemaphore,
+        VK_NULL_HANDLE, &imageIndex);
+    if (ACQUIRE_RESULT == VK_TIMEOUT) {
+        // Ignore.
+        return true;
+    }
+    if (ACQUIRE_RESULT == VK_ERROR_SURFACE_LOST_KHR ||
+        ACQUIRE_RESULT == VK_ERROR_OUT_OF_DATE_KHR) {
+        // Terminate.
+        cout << "StorminNormin: Vulkan surface lost or swapchain "
+            "needs recreation." << endl;
+        return false;
+    }
+    if (ACQUIRE_RESULT != VK_SUCCESS &&
+        ACQUIRE_RESULT != VK_SUBOPTIMAL_KHR) {
+        // Warn.
+        cout << "StorminNormin: vkAcquireNextImageKHR failed: " <<
+            ACQUIRE_RESULT << "." << endl;
+        return true;
+    }
 
+    // Reset only after acquisition succeeds.
+    const VkResult RESET_FENCE_RESULT = vkResetFences(mDevice, 1,
+        &mInFlightFence);
+    if (RESET_FENCE_RESULT != VK_SUCCESS) {
+        // Warn.
+        cout << "StorminNormin: vkResetFences failed: " <<
+            RESET_FENCE_RESULT << "." << endl;
+        return true;
+    }
+
+    // After render frame.
     vkResetCommandBuffer(mCommandBuffer, 0);
 
     VkCommandBufferBeginInfo beginInfo{};
@@ -757,6 +800,7 @@ Canvas::drawCanvas() {
     presentInfo.pImageIndices = &imageIndex;
 
     vkQueuePresentKHR(mGraphicsQueue, &presentInfo);
+    return true; // Success.
 }
 
 /**

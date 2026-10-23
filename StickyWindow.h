@@ -231,7 +231,7 @@ class StickyWindow {
          */
         Window mX11Window = X11_NONE;
         char* mWindowTitle = nullptr;
-        bool mCanvasError = false;
+        bool mCanvasInitError = false;
 
         bool mIsVisuallyTransparent = false;
         XVisualInfo mVisualInfoStruct { };

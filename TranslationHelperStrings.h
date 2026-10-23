@@ -723,7 +723,7 @@ const QStringList SHOW_ICONS_ON_BUTTONS_SET = {
 /**
  * Settings Hints.
  */
-const QStringList FROSTEDFLAKES_SIZE_HINT = {
+const QStringList SNOW_FLAKES_SIZE_HINT = {
     "Select smaller to larger sized storm items.",
     "Wählen Sie Sturmgegenstände von kleinerer bis größerer Größe aus.",
     "Seleccione artículos de tormenta de tamaño más pequeño a más grande.",
@@ -735,7 +735,7 @@ const QStringList FROSTEDFLAKES_SIZE_HINT = {
     "Выберите штормовые предметы от меньшего к большему размеру."
 };
 
-const QStringList FROSTEDFLAKES_COUNT_HINT = {
+const QStringList SNOW_FLAKES_COUNT_HINT = {
     "Select more or less items in the storm.",
     "Wählen Sie mehr oder weniger Artikel im Sturm aus.",
     "Selecciona más o menos artículos en la tormenta.",
@@ -747,7 +747,7 @@ const QStringList FROSTEDFLAKES_COUNT_HINT = {
     "Выберите больше или меньше предметов в шторме."
 };
 
-const QStringList FROSTEDFLAKES_COLOR_ONE_HINT = {
+const QStringList SNOW_FLAKES_COLOR_ONE_HINT = {
     "Select up to four storm item colors.",
     "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
     "Seleccione hasta cuatro colores de artículos de tormenta.",
@@ -759,7 +759,7 @@ const QStringList FROSTEDFLAKES_COLOR_ONE_HINT = {
     "Выберите до четырех цветов предметов шторма."
 };
 
-const QStringList FROSTEDFLAKES_COLOR_TWO_HINT = {
+const QStringList SNOW_FLAKES_COLOR_TWO_HINT = {
     "Select up to four storm item colors.",
     "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
     "Seleccione hasta cuatro colores de artículos de tormenta.",
@@ -771,7 +771,7 @@ const QStringList FROSTEDFLAKES_COLOR_TWO_HINT = {
     "Выберите до четырех цветов предметов шторма."
 };
 
-const QStringList FROSTEDFLAKES_COLOR_THREE_HINT = {
+const QStringList SNOW_FLAKES_COLOR_THREE_HINT = {
     "Select up to four storm item colors.",
     "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
     "Seleccione hasta cuatro colores de artículos de tormenta.",
@@ -783,7 +783,7 @@ const QStringList FROSTEDFLAKES_COLOR_THREE_HINT = {
     "Выберите до четырех цветов предметов шторма."
 };
 
-const QStringList FROSTEDFLAKES_COLOR_FOUR_HINT = {
+const QStringList SNOW_FLAKES_COLOR_FOUR_HINT = {
     "Select up to four storm item colors.",
     "Wählen Sie bis zu vier Sturm-Gegenstandfarben aus.",
     "Seleccione hasta cuatro colores de artículos de tormenta.",
@@ -988,6 +988,18 @@ const QStringList FLAKE_COUNT_HINTS_SET = {
     "フレーク", "vlokken", "flocos", "хлопья"
 };
 
+
+const QStringList SNOW_FLAKES_TABNAME_SET = {
+    "Snow Flakes", "Schneeflocken", "Copos de nieve", "Flocons de neige",
+    "Fiocchi di neve", "雪の結晶", "Sneeuwvlokken", "Flocos de Neve",
+    "Снежные хлопья"
+};
+
+const QStringList ADVANCED_TABNAME_SET = {
+    "Advanced", "Fortgeschritten", "avanzada", "Avancé", "Avanzato",
+    "高度な", "Geavanceerd", "Avançado", "Продвинутый"
+};
+
 /**
  * One big set of Translation Sets.
  */
@@ -1070,12 +1082,12 @@ const vector<QStringList> ALL_TRANSLATIONS = {
     BACKGROUND_COLOR_HINT,
     BACKGROUND_OPACITY_HINT,
     DESKTOP_OVERHANG_HINT,
-    FROSTEDFLAKES_COLOR_FOUR_HINT,
-    FROSTEDFLAKES_COLOR_ONE_HINT,
-    FROSTEDFLAKES_COLOR_THREE_HINT,
-    FROSTEDFLAKES_COLOR_TWO_HINT,
-    FROSTEDFLAKES_COUNT_HINT,
-    FROSTEDFLAKES_SIZE_HINT,
+    SNOW_FLAKES_COLOR_FOUR_HINT,
+    SNOW_FLAKES_COLOR_ONE_HINT,
+    SNOW_FLAKES_COLOR_THREE_HINT,
+    SNOW_FLAKES_COLOR_TWO_HINT,
+    SNOW_FLAKES_COUNT_HINT,
+    SNOW_FLAKES_SIZE_HINT,
     ON_TOP_INSTEAD_HINT,
     PREFERRED_DESKTOP_HINT,
     SHOW_ICONS_ON_BUTTONS_HINT,
@@ -1086,5 +1098,8 @@ const vector<QStringList> ALL_TRANSLATIONS = {
      * Slider value hints.
      */
     FLAKE_SIZE_HINTS_SET,
-    FLAKE_COUNT_HINTS_SET
+    FLAKE_COUNT_HINTS_SET,
+
+    SNOW_FLAKES_TABNAME_SET,
+    ADVANCED_TABNAME_SET
 };

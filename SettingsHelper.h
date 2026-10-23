@@ -18,19 +18,19 @@ class SettingsHelper {
 
     public:
         // Tab groups.
-        static inline const QString GENERAL_GROUP       = "General";
-        static inline const QString FROSTEDFLAKES_GROUP = "FrostedFlakes";
+        static inline const QString SNOW_FLAKES_TABNAME       = "Snow Flakes";
+        static inline const QString ADVANCED_TABNAME          = "Advanced";
 
         /**
          * Configurable Settings strings.
          */
-        static inline const QString FROSTEDFLAKES_SIZE        = "❄️ Flake Size";
-        static inline const QString FROSTEDFLAKES_COUNT       = "Flake Count";
+        static inline const QString SNOW_FLAKES_SIZE          = "❄️ Flake Size";
+        static inline const QString SNOW_FLAKES_COUNT         = "Flake Count";
 
-        static inline const QString FROSTEDFLAKES_COLOR_ONE   = "Flake Color One";
-        static inline const QString FROSTEDFLAKES_COLOR_TWO   = "Flake Color Two";
-        static inline const QString FROSTEDFLAKES_COLOR_THREE = "Flake Color Three";
-        static inline const QString FROSTEDFLAKES_COLOR_FOUR  = "Flake Color Four";
+        static inline const QString SNOW_FLAKES_COLOR_ONE     = "Flake Color One";
+        static inline const QString SNOW_FLAKES_COLOR_TWO     = "Flake Color Two";
+        static inline const QString SNOW_FLAKES_COLOR_THREE   = "Flake Color Three";
+        static inline const QString SNOW_FLAKES_COLOR_FOUR    = "Flake Color Four";
 
         static inline const QString WIND_STRENGTH             = "Wind Strength";
         static inline const QString WIND_LENGTH               = "Wind Length";
@@ -56,13 +56,13 @@ class SettingsHelper {
         /**
          * Configurable Settings hint strings.
          */
-        static inline const QString FROSTEDFLAKES_SIZE_HINT        = "Select smaller to larger sized storm items.";
-        static inline const QString FROSTEDFLAKES_COUNT_HINT       = "Select more or less items in the storm.";
+        static inline const QString SNOW_FLAKES_SIZE_HINT          = "Select smaller to larger sized storm items.";
+        static inline const QString SNOW_FLAKES_COUNT_HINT         = "Select more or less items in the storm.";
 
-        static inline const QString FROSTEDFLAKES_COLOR_ONE_HINT   = "Select up to four storm item colors.";
-        static inline const QString FROSTEDFLAKES_COLOR_TWO_HINT   = "Select up to four storm item colors.";
-        static inline const QString FROSTEDFLAKES_COLOR_THREE_HINT = "Select up to four storm item colors.";
-        static inline const QString FROSTEDFLAKES_COLOR_FOUR_HINT  = "Select up to four storm item colors.";
+        static inline const QString SNOW_FLAKES_COLOR_ONE_HINT     = "Select up to four storm item colors.";
+        static inline const QString SNOW_FLAKES_COLOR_TWO_HINT     = "Select up to four storm item colors.";
+        static inline const QString SNOW_FLAKES_COLOR_THREE_HINT   = "Select up to four storm item colors.";
+        static inline const QString SNOW_FLAKES_COLOR_FOUR_HINT    = "Select up to four storm item colors.";
 
         static inline const QString WIND_STRENGTH_HINT             = "Select a weaker or stronger wind strength.";
         static inline const QString WIND_LENGTH_HINT               = "Select shorter or longer windy periods.";
@@ -87,7 +87,7 @@ class SettingsHelper {
 
         // Settings property struct.
         struct SettingsProperty {
-            QString group = "";
+            QString tabname = "";
             QString name = "";
             QString hint = "";
             SettingsPropertyType valueType = NONE_VALUETYPE;
@@ -99,162 +99,162 @@ class SettingsHelper {
         // App configurables. Entries determine order of
         // appearance in Dialog.
         static inline const vector<SettingsProperty> PROPERTIES = {
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_SIZE,
-              .hint = FROSTEDFLAKES_SIZE_HINT,
+
+            // Snow Flakes Tab.
+
+            { .tabname = SNOW_FLAKES_TABNAME, .name = SNOW_FLAKES_SIZE,
+              .hint = SNOW_FLAKES_SIZE_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "15",
               .rangeMinimum = 10, .rangeMaximum = 80
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COUNT,
-              .hint = FROSTEDFLAKES_COUNT_HINT,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = SNOW_FLAKES_COUNT,
+              .hint = SNOW_FLAKES_COUNT_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "250",
               .rangeMinimum = 25, .rangeMaximum = 1000
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = "d0", .hint = "",
+            { .tabname = SNOW_FLAKES_TABNAME, .name = "d0", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_ONE,
-              .hint = FROSTEDFLAKES_COLOR_ONE_HINT,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = SNOW_FLAKES_COLOR_ONE,
+              .hint = SNOW_FLAKES_COLOR_ONE_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#fff9d7",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_TWO,
-              .hint = FROSTEDFLAKES_COLOR_TWO_HINT,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = SNOW_FLAKES_COLOR_TWO,
+              .hint = SNOW_FLAKES_COLOR_TWO_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#FFBF00",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_THREE,
-              .hint = FROSTEDFLAKES_COLOR_THREE_HINT,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = SNOW_FLAKES_COLOR_THREE,
+              .hint = SNOW_FLAKES_COLOR_THREE_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#ff7b08",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = FROSTEDFLAKES_COLOR_FOUR,
-              .hint = FROSTEDFLAKES_COLOR_FOUR_HINT,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = SNOW_FLAKES_COLOR_FOUR,
+              .hint = SNOW_FLAKES_COLOR_FOUR_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#ff1170",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = "d1", .hint = "",
+            { .tabname = SNOW_FLAKES_TABNAME, .name = "d1", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
-            { .group = FROSTEDFLAKES_GROUP, .name = WIND_STRENGTH,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = WIND_STRENGTH,
               .hint = WIND_STRENGTH_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "100",
               .rangeMinimum = 0, .rangeMaximum = 300
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = WIND_LENGTH,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = WIND_LENGTH,
               .hint = WIND_LENGTH_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "30",
               .rangeMinimum = 3, .rangeMaximum = 50
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = WIND_BURST_LENGTH,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = WIND_BURST_LENGTH,
               .hint = WIND_BURST_LENGTH_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = 5, .rangeMaximum = 10
             },
-            { .group = FROSTEDFLAKES_GROUP, .name = "d2", .hint = "",
+            { .tabname = SNOW_FLAKES_TABNAME, .name = "d2", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
-            { .group = GENERAL_GROUP, .name = BACKGROUND_COLOR,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = BACKGROUND_COLOR,
               .hint = BACKGROUND_COLOR_HINT,
               .valueType = COLOR_VALUETYPE, .initialValue = "#0055ff",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = BACKGROUND_OPACITY,
+            { .tabname = SNOW_FLAKES_TABNAME, .name = BACKGROUND_OPACITY,
               .hint = BACKGROUND_OPACITY_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "50",
               .rangeMinimum = 0, .rangeMaximum = 255
             },
-            { .group = GENERAL_GROUP, .name = "d3", .hint = "",
-              .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
-              .rangeMinimum = numeric_limits<int>::min(),
-              .rangeMaximum = numeric_limits<int>::max()
-            },
 
-            { .group = GENERAL_GROUP, .name = APP_LANGUAGE,
+            // Advanced Tab.
+
+            { .tabname = ADVANCED_TABNAME, .name = APP_LANGUAGE,
               .hint = APP_LANGUAGE_HINT,
               .valueType = COMBOBOX_VALUETYPE, .initialValue = "en",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = "d4", .hint = "",
+            { .tabname = ADVANCED_TABNAME, .name = "d4", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
-            { .group = GENERAL_GROUP, .name = ON_TOP_INSTEAD,
+            { .tabname = ADVANCED_TABNAME, .name = ON_TOP_INSTEAD,
               .hint = ON_TOP_INSTEAD_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = ALLOW_DESKTOP_DRAG,
+            { .tabname = ADVANCED_TABNAME, .name = ALLOW_DESKTOP_DRAG,
               .hint = ALLOW_DESKTOP_DRAG_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = PREFERRED_DESKTOP,
+            { .tabname = ADVANCED_TABNAME, .name = PREFERRED_DESKTOP,
               .hint = PREFERRED_DESKTOP_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "-1",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = DESKTOP_OVERHANG,
+            { .tabname = ADVANCED_TABNAME, .name = DESKTOP_OVERHANG,
               .hint = DESKTOP_OVERHANG_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "false",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = "d5", .hint = "",
+            { .tabname = ADVANCED_TABNAME, .name = "d5", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
-            { .group = GENERAL_GROUP, .name = SHOW_PIN_ON_WINDOW_HOVER,
+            { .tabname = ADVANCED_TABNAME, .name = SHOW_PIN_ON_WINDOW_HOVER,
               .hint = SHOW_PIN_ON_WINDOW_HOVER_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = AUTOHIDE_CONTROLS,
+            { .tabname = ADVANCED_TABNAME, .name = AUTOHIDE_CONTROLS,
               .hint = AUTOHIDE_CONTROLS_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "false",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = AUTOHIDE_DELAY,
+            { .tabname = ADVANCED_TABNAME, .name = AUTOHIDE_DELAY,
               .hint = AUTOHIDE_DELAY_HINT,
               .valueType = SLIDER_VALUETYPE, .initialValue = "4",
               .rangeMinimum = 1, .rangeMaximum = 9
             },
-            { .group = GENERAL_GROUP, .name = "d6", .hint = "",
+            { .tabname = ADVANCED_TABNAME, .name = "d6", .hint = "",
               .valueType = DIVIDER_VALUETYPE, .initialValue = "5",
               .rangeMinimum = numeric_limits<int>::min(),
               .rangeMaximum = numeric_limits<int>::max()
             },
 
-            { .group = GENERAL_GROUP, .name = SHOW_SETTINGS_HINTS,
+            { .tabname = ADVANCED_TABNAME, .name = SHOW_SETTINGS_HINTS,
               .hint = SHOW_SETTINGS_HINTS_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = std::numeric_limits<int>::min(),
               .rangeMaximum = std::numeric_limits<int>::max()
             },
-            { .group = GENERAL_GROUP, .name = SHOW_ICONS_ON_BUTTONS,
+            { .tabname = ADVANCED_TABNAME, .name = SHOW_ICONS_ON_BUTTONS,
               .hint = SHOW_ICONS_ON_BUTTONS_HINT,
               .valueType = BOOL_VALUETYPE, .initialValue = "true",
               .rangeMinimum = std::numeric_limits<int>::min(),

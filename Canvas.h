@@ -53,7 +53,7 @@ class Canvas {
         /**
          * Draw the canvas and all storm items.
          */
-        void drawCanvas();
+        bool drawCanvas();
 
     private:
 

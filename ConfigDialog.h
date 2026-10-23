@@ -6,6 +6,7 @@
 #include <QFormLayout>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTabWidget>
 #include <QVBoxLayout>
 
 // x11 libraries.
@@ -22,7 +23,7 @@ class ConfigDialog : public QDialog {
 
     public:
         static inline const int CONFIG_DIALOG_WIDTH = 575;
-        static inline const int CONFIG_DIALOG_HEIGHT = 880;
+        static inline const int CONFIG_DIALOG_HEIGHT = 500;
 
         static inline const int FORM_TOP_BOTTOM_SPACING = 15;
         static inline const int FORM_LAYOUT_ROW_SPACING = 8;
@@ -64,6 +65,41 @@ class ConfigDialog : public QDialog {
 
     private:
         /**
+         * Init per-tab Form-Row Helper getters and setters. These
+         * get & set Settings by row in each of the Dialog tab-forms.
+         */
+        void initFormRowGetterSetters();
+
+        /**
+         * This helper called from createConfigDialog() adds a setting
+         * Edit Widget or a Divider to the form that contains the row #.
+         */
+        void addFormRow(const int row, const QString key,
+            QWidget* widget);
+
+        /**
+         * This helper called from createConfigDialog() is used to
+         * provide translated floating hints for settings in each row.
+         */
+        QWidget* getLabelWidgetFromFormRow(QWidget* widget,
+            const int row);
+
+        /**
+         * This helper called from loadConfigDialog(),
+         * loadConfigDialogWithDefaults() & acceptConfigDialog()
+         * retrieves an Edit Widget from the form that contains the
+         * row #, for inspection and modification.
+         */
+        QWidget* getFieldRoleWidgetFromFormRow(const int row);
+
+        /**
+         * This helper called from translateConfigDialog() is used to
+         * change displayed text of an Edit Widget from the form that
+         * contains the row # when user changes preferred app language.
+         */
+        QLayoutItem* getLabelRoleLayoutFromFormRow(const int row);
+
+        /**
          * Build the UI form layout.
          */
         void createConfigDialog();
@@ -96,7 +132,14 @@ class ConfigDialog : public QDialog {
         Window mWindow = X11_NONE;
 
         QVBoxLayout* mMainLayout = nullptr;
-        QFormLayout* mFormLayout = nullptr;
+
+        QTabWidget* mTabWidget;
+
+        QFormLayout* mSnowFlakesForm = nullptr;
+        int mSnowFlakesRowCount = 0;
+
+        QFormLayout* mAdvancedForm = nullptr;
+        int mAdvancedFormRowCount = 0;
 
         QHBoxLayout* mButtonLayout = nullptr;
 
