@@ -61,8 +61,8 @@ Atom mConfigUpdated{};
  */
 int
 main(int argc, char** argv) {
-    cout << endl << XCOLOR_BLUE << APP_NAME << " Starts." <<
-        XCOLOR_NORMAL << endl << endl;
+    cout << endl << TIMESTAMP << " " << XCOLOR_BLUE << APP_NAME <<
+        " Starts." << XCOLOR_NORMAL << endl << endl;
 
     // Init Display global.
     XInitThreads();
@@ -80,6 +80,7 @@ main(int argc, char** argv) {
     // Set X Error handler (quiets non-errors).
     mXHelper = new XHelper();
     XSetErrorHandler(mXHelper->handleX11ErrorEvent);
+    XSetIOErrorHandler(mXHelper->handleX11IOErrorEvent);
 
     // QApplication app(argc, argv) issues warnings in stdout
     // if platform is using qt themeing - wrap before.
@@ -136,7 +137,8 @@ main(int argc, char** argv) {
     delete mSettingsHelper;
     sanitizeGlobals();
 
-    cout << XCOLOR_BLUE << APP_NAME << " Finishes." << XCOLOR_NORMAL << endl;
+    cout << TIMESTAMP << " " << XCOLOR_BLUE << APP_NAME <<
+        " Finishes." << XCOLOR_NORMAL << endl;
     return false;
 }
 

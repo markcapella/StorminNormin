@@ -31,12 +31,12 @@ class Canvas {
     public:
 
         /**
-         * StorminNormin canvas constructor.
+         * Canvas constructor.
          */
         Canvas(Window window);
 
         /**
-         * StorminNormin canvas destructor.
+         * Canvas destructor.
          */
         ~Canvas();
 
@@ -58,12 +58,12 @@ class Canvas {
     private:
 
         /**
-         * Init StorminNormin canvas & its storm items array.
+         * Init Canvas & its storm items array.
          */
         void initStormItems();
 
         /**
-         * Uninit StorminNormin canvas.
+         * Uninit Canvas.
          */
         void uninitStormItems();
 

@@ -2,7 +2,7 @@
 #include "Global.h"
 
 /**
- * StorminNormin canvas constructor.
+ * Canvas constructor.
  */
 Canvas::Canvas(Window window) {
     srand(static_cast<unsigned int>(time(nullptr)));
@@ -11,7 +11,7 @@ Canvas::Canvas(Window window) {
 }
 
 /**
- * StorminNormin canvas destructor.
+ * Canvas destructor.
  */
 Canvas::~Canvas() {
     uninitCanvas();
@@ -645,7 +645,7 @@ Canvas::drawCanvas() {
     }
     if (WAIT_FENCE_RESULT != VK_SUCCESS) {
         // Warn.
-        cout << "StorminNormin: vkWaitForFences failed: " <<
+        cout << APP_NAME << ": vkWaitForFences failed: " <<
             WAIT_FENCE_RESULT << "." << endl;
         return true;
     }
@@ -662,14 +662,14 @@ Canvas::drawCanvas() {
     if (ACQUIRE_RESULT == VK_ERROR_SURFACE_LOST_KHR ||
         ACQUIRE_RESULT == VK_ERROR_OUT_OF_DATE_KHR) {
         // Terminate.
-        cout << "StorminNormin: Vulkan surface lost or swapchain "
+        cout << APP_NAME << ": Vulkan surface lost or swapchain "
             "needs recreation." << endl;
         return false;
     }
     if (ACQUIRE_RESULT != VK_SUCCESS &&
         ACQUIRE_RESULT != VK_SUBOPTIMAL_KHR) {
         // Warn.
-        cout << "StorminNormin: vkAcquireNextImageKHR failed: " <<
+        cout << APP_NAME << ": vkAcquireNextImageKHR failed: " <<
             ACQUIRE_RESULT << "." << endl;
         return true;
     }
@@ -679,7 +679,7 @@ Canvas::drawCanvas() {
         &mInFlightFence);
     if (RESET_FENCE_RESULT != VK_SUCCESS) {
         // Warn.
-        cout << "StorminNormin: vkResetFences failed: " <<
+        cout << APP_NAME << ": vkResetFences failed: " <<
             RESET_FENCE_RESULT << "." << endl;
         return true;
     }
@@ -804,7 +804,7 @@ Canvas::drawCanvas() {
 }
 
 /**
- * Init StorminNormin canvas & its storm items array.
+ * Init Canvas & its storm items array.
  */
 void
 Canvas::initStormItems() {
@@ -850,7 +850,7 @@ Canvas::initStormItems() {
 }
 
 /**
- * Uninit StorminNormin canvas.
+ * Uninit Canvas.
  */
 void
 Canvas::uninitStormItems() {

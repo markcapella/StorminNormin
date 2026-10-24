@@ -74,6 +74,9 @@ typedef chrono::steady_clock Clock;
  */
 
 // Utiliy Macros.
+#define TIMESTAMP QDateTime::currentDateTime(). \
+    toString("hh:mm:ss.zzz").toStdString()
+
 #define randomIntegerUpTo(n) \
     ((int) (((n) <= 0) ? 0.0 : (drand48() * (n))))
 
