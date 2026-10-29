@@ -189,18 +189,18 @@ StickyWindow::resize(const int xPos, const int yPos,
 /**
  * Main X11 event cycle Handler.
  */
-void
+bool
 StickyWindow::run() {
     while (true) {
         // Fast quit on init error.
         if (mCanvasInitError) {
-            return;
+            return false;
         }
 
         // Handle X11 events. Close when requested.
         if (handleX11EventQueue()) {
             mCanvas->uninitCanvas();
-            break;
+            return true;
         }
 
         // Set any hovered control visible.
@@ -211,7 +211,7 @@ StickyWindow::run() {
 
         // Draw vulkan, then window layer canvas.
         if (!mCanvas->drawCanvas()) {
-            return;
+            return false;
         }
         draw();
     }

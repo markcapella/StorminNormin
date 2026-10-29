@@ -41,20 +41,6 @@ XHelper::handleX11ErrorEvent(Display* display,
 }
 
 /**
- * This method traps and handles X11 I/O errors. Graceful loss
- * of Display is mostly handled here.
- */
-int
-XHelper::handleX11IOErrorEvent(Display* display) {
-    printf("%s: X11 I/O failure, display : %p.\n",
-        APP_NAME, static_cast<void*>(display));
-
-    // Exit hard.
-    fflush(stderr);
-    _exit(1);
-}
-
-/**
  * This method returns the Window Managers name.
  */
 string

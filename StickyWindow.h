@@ -60,7 +60,7 @@ class StickyWindow {
         /**
          * Main X11 event cycle Handler.
          */
-        void run();
+        bool run();
 
         /**
          * This method returns StickyWindows internal x11 window.

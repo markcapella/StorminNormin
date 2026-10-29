@@ -26,17 +26,19 @@
  * Common charsets to enable colorized cout messages.
  * "Ansii escape sequences for cursor color controls".
  */
-#define XCOLOR_NORMAL  "\033[0m"
 
-#define XCOLOR_BLACK   "\033[0;30m"
-#define XCOLOR_WHITE   "\033[0;37m"
+// Disable colors if messages going to file.
+static inline const bool USE_XCOLOR = isatty(STDOUT_FILENO);
 
-#define XCOLOR_RED     "\033[0;31m"
-#define XCOLOR_GREEN   "\033[1;32m"
-#define XCOLOR_YELLOW  "\033[1;33m"
-#define XCOLOR_BLUE    "\033[1;34m"
-#define XCOLOR_MAGENTA "\033[1;35m"
-#define XCOLOR_CYAN    "\033[1;36m"
+static inline const char* XCOLOR_NORMAL  = USE_XCOLOR ? "\033[0m"     : "";
+static inline const char* XCOLOR_BLACK   = USE_XCOLOR ? "\033[0;30m"  : "";
+static inline const char* XCOLOR_WHITE   = USE_XCOLOR ? "\033[0;37m"  : "";
+static inline const char* XCOLOR_RED     = USE_XCOLOR ? "\033[0;31m"  : "";
+static inline const char* XCOLOR_GREEN   = USE_XCOLOR ? "\033[1;32m"  : "";
+static inline const char* XCOLOR_YELLOW  = USE_XCOLOR ? "\033[1;33m"  : "";
+static inline const char* XCOLOR_BLUE    = USE_XCOLOR ? "\033[1;34m"  : "";
+static inline const char* XCOLOR_MAGENTA = USE_XCOLOR ? "\033[1;35m"  : "";
+static inline const char* XCOLOR_CYAN    = USE_XCOLOR ? "\033[1;36m"  : "";
 
 // X11 Render colors (not properly blended).
 static inline constexpr XRenderColor TRANSPARENT_RCOLOR =

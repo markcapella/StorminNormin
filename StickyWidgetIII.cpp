@@ -61,8 +61,8 @@ Atom mConfigUpdated{};
  */
 int
 main(int argc, char** argv) {
-    cout << endl << TIMESTAMP << " " << XCOLOR_BLUE << APP_NAME <<
-        " Starts." << XCOLOR_NORMAL << endl << endl;
+    cout << endl << TIMESTAMP << " : " << APP_NAME <<
+        " : Starts." << endl;
 
     // Init Display global.
     XInitThreads();
@@ -80,7 +80,6 @@ main(int argc, char** argv) {
     // Set X Error handler (quiets non-errors).
     mXHelper = new XHelper();
     XSetErrorHandler(mXHelper->handleX11ErrorEvent);
-    XSetIOErrorHandler(mXHelper->handleX11IOErrorEvent);
 
     // QApplication app(argc, argv) issues warnings in stdout
     // if platform is using qt themeing - wrap before.
@@ -115,7 +114,8 @@ main(int argc, char** argv) {
     mRecentsHelper = new RecentsHelper();
     if (mRecentsHelper->getAppRecentsName().isEmpty()) {
         sanitizeGlobals();
-        cout << XCOLOR_RED << APP_NAME << " Finishes." << XCOLOR_NORMAL << endl;
+        cout << TIMESTAMP << " : " << APP_NAME <<
+            " : Finishes - fatal." << endl;
         return true;
     }
 
@@ -128,17 +128,16 @@ main(int argc, char** argv) {
 
     // Run main window.
     mStickyWindow = new StickyWindow();
-    if (mStickyWindow->getX11Window() != X11_NONE) {
-        mStickyWindow->run();
+    if (mStickyWindow->getX11Window()) {
+        if (mStickyWindow->run()) {
+            delete mStickyWindow;
+            delete mTranslationHelper;
+            delete mSettingsHelper;
+            sanitizeGlobals();
+        }
     }
-    delete mStickyWindow;
 
-    delete mTranslationHelper;
-    delete mSettingsHelper;
-    sanitizeGlobals();
-
-    cout << TIMESTAMP << " " << XCOLOR_BLUE << APP_NAME <<
-        " Finishes." << XCOLOR_NORMAL << endl;
+    cout << TIMESTAMP << " : " << APP_NAME << " : Finishes." << endl;
     return false;
 }
 

@@ -28,12 +28,6 @@ class XHelper {
             XErrorEvent* event);
 
         /**
-         * This method traps and handles X11 I/O errors. Graceful loss
-         * of Display is mostly handled here.
-         */
-        static int handleX11IOErrorEvent(Display* display);
-
-        /**
          * This method returns the Window Managers name.
          */
         string getWindowManagerName();

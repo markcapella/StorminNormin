@@ -78,7 +78,7 @@ Canvas::initCanvas() {
         if (vkCreateInstance(&createInfo, nullptr, &mInstance) !=
             VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create instance! Ensure "
-                "your drivers support Vulkan 1.3" << endl << endl;
+                "your drivers support Vulkan 1.3" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -93,7 +93,7 @@ Canvas::initCanvas() {
         if (vkCreateXlibSurfaceKHR(mInstance, &surfaceCreateInfo,
             nullptr, &mSurface) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create X11 "
-                "Vulkan surface!" << endl << endl;
+                "Vulkan surface!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -103,7 +103,7 @@ Canvas::initCanvas() {
         vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr);
         if (deviceCount == 0) {
             cout << XCOLOR_RED << "Failed to find GPUs with "
-                "Vulkan support!" << endl << endl;
+                "Vulkan support!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -129,7 +129,7 @@ Canvas::initCanvas() {
 
         if (mGraphicsQueueFamilyIndex == -1) {
             cout << XCOLOR_RED << "Failed to find a graphics "
-                "queue family!" << endl << endl;
+                "queue family!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -166,8 +166,8 @@ Canvas::initCanvas() {
         VkResult result = vkCreateDevice(mPhysicalDevice,
             &deviceCreateInfo, nullptr, &mDevice);
         if (result != VK_SUCCESS) {
-            cout << XCOLOR_RED << "Failed to create logical "
-                "device! Error code: " << result << "." << endl << endl;
+            cout << XCOLOR_RED << "Failed to create logical device! "
+                "Error code: " << result << "." << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -200,7 +200,7 @@ Canvas::initCanvas() {
         if (vkCreateSwapchainKHR(mDevice, &swapchainCreateInfo,
             nullptr, &mSwapchain) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
-                "swapchain!\n" << endl << endl;
+                "swapchain!\n" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -230,8 +230,8 @@ Canvas::initCanvas() {
 
             if (vkCreateImageView(mDevice, &viewInfo, nullptr,
                 &mSwapchainImageViews[i]) != VK_SUCCESS) {
-                cout << XCOLOR_RED << "Failed to create "
-                    "swapchain image view " << i << "!" << endl << endl;
+                cout << XCOLOR_RED << "Failed to create swapchain "
+                    "image view " << i << "!" << XCOLOR_NORMAL << endl;
                 uninitCanvas();
                 return false;
             }
@@ -252,7 +252,7 @@ Canvas::initCanvas() {
         if (vkCreatePipelineLayout(mDevice, &pipelineLayoutInfo,
             nullptr, &mPipelineLayout) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create graphics "
-                "pipeline layout!" << endl << endl;
+                "pipeline layout!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -357,7 +357,7 @@ Canvas::initCanvas() {
         if (vkCreateGraphicsPipelines(mDevice, VK_NULL_HANDLE, 1,
             &pipelineInfo, nullptr, &mGraphicsPipeline) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
-                "graphics pipeline!" << endl << endl;
+                "graphics pipeline!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -372,7 +372,7 @@ Canvas::initCanvas() {
         if (vkCreateCommandPool(mDevice, &poolInfo, nullptr,
             &mCommandPool) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
-                "command pool!" << endl << endl;
+                "command pool!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -387,7 +387,7 @@ Canvas::initCanvas() {
         if (vkAllocateCommandBuffers(mDevice, &allocInfo,
             &mCommandBuffer) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to allocate "
-                "command buffer!" << endl << endl;
+                "command buffer!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -407,7 +407,7 @@ Canvas::initCanvas() {
             vkCreateFence(mDevice, &fenceInfo, nullptr,
                 &mInFlightFence) != VK_SUCCESS) {
             cout << XCOLOR_RED << "Failed to create "
-                "synchronization objects!" << endl << endl;
+                "synchronization objects!" << XCOLOR_NORMAL << endl;
             uninitCanvas();
             return false;
         }
@@ -417,7 +417,7 @@ Canvas::initCanvas() {
 
     } catch (const exception& e) {
         cout << XCOLOR_RED << "error: " << e.what() << 
-            "." << endl << endl;
+            "." << XCOLOR_NORMAL << endl;
         uninitCanvas();
         return false;
     }
@@ -526,6 +526,8 @@ Canvas::drawCanvas() {
         initCanvas();
         if (!mInitialized) {
             // Terminate.
+            cout << TIMESTAMP << " : " << APP_NAME << " : Fatal, Vulkan "
+                "failed initialization." << XCOLOR_NORMAL << endl;
             return false;
         }
     }
@@ -645,8 +647,8 @@ Canvas::drawCanvas() {
     }
     if (WAIT_FENCE_RESULT != VK_SUCCESS) {
         // Warn.
-        cout << APP_NAME << ": vkWaitForFences failed: " <<
-            WAIT_FENCE_RESULT << "." << endl;
+        cout << TIMESTAMP << " : " << APP_NAME << " : vkWaitForFences "
+            "failed: " << WAIT_FENCE_RESULT << "." << endl;
         return true;
     }
 
@@ -662,15 +664,16 @@ Canvas::drawCanvas() {
     if (ACQUIRE_RESULT == VK_ERROR_SURFACE_LOST_KHR ||
         ACQUIRE_RESULT == VK_ERROR_OUT_OF_DATE_KHR) {
         // Terminate.
-        cout << APP_NAME << ": Vulkan surface lost or swapchain "
-            "needs recreation." << endl;
+        cout << TIMESTAMP << " : " << APP_NAME << " : Fatal, Vulkan "
+            "surface lost or swapchain needs recreation." << endl;
         return false;
     }
     if (ACQUIRE_RESULT != VK_SUCCESS &&
         ACQUIRE_RESULT != VK_SUBOPTIMAL_KHR) {
         // Warn.
-        cout << APP_NAME << ": vkAcquireNextImageKHR failed: " <<
-            ACQUIRE_RESULT << "." << endl;
+        cout << TIMESTAMP << " : " << APP_NAME <<
+            " : vkAcquireNextImageKHR failed: " << ACQUIRE_RESULT <<
+            "." << endl;
         return true;
     }
 
@@ -679,8 +682,9 @@ Canvas::drawCanvas() {
         &mInFlightFence);
     if (RESET_FENCE_RESULT != VK_SUCCESS) {
         // Warn.
-        cout << APP_NAME << ": vkResetFences failed: " <<
-            RESET_FENCE_RESULT << "." << endl;
+        cout << TIMESTAMP << " : " << APP_NAME <<
+            " : vkResetFences failed: " << RESET_FENCE_RESULT <<
+            "." << endl;
         return true;
     }
 
