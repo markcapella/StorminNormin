@@ -36,19 +36,26 @@ ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
     mSnowFlakesForm->setContentsMargins(0, FORM_TOP_BOTTOM_SPACING,
         0, FORM_TOP_BOTTOM_SPACING);
     mSnowFlakesForm->setVerticalSpacing(FORM_LAYOUT_ROW_SPACING);
+    mSnowFlakesForm->setLabelAlignment(Qt::AlignRight);
+    mSnowFlakesForm->setFormAlignment(Qt::AlignLeft);
 
     mAdvancedForm = new QFormLayout();
     mAdvancedForm->setContentsMargins(0, FORM_TOP_BOTTOM_SPACING,
         0, FORM_TOP_BOTTOM_SPACING);
     mAdvancedForm->setVerticalSpacing(FORM_LAYOUT_ROW_SPACING);
+    mAdvancedForm->setLabelAlignment(Qt::AlignRight);
+    mAdvancedForm->setFormAlignment(Qt::AlignLeft);
 
     createConfigDialog();
 
     // Add the formlayout to a formcontainer.
     // Add the formcontainer to a scrollarea.
     QWidget* snowFlakesFormContainer = new QWidget(this);
-    mSnowFlakesForm->setFormAlignment(Qt::AlignCenter);
-    snowFlakesFormContainer->setLayout(mSnowFlakesForm);
+    QHBoxLayout* snowFlakesContainerLayout = new QHBoxLayout(
+        snowFlakesFormContainer);
+    snowFlakesContainerLayout->addStretch();
+    snowFlakesContainerLayout->addLayout(mSnowFlakesForm);
+    snowFlakesContainerLayout->addStretch();
 
     QScrollArea* snowFlakesScrollArea = new QScrollArea(this);
     snowFlakesScrollArea->setWidgetResizable(true);
@@ -57,8 +64,11 @@ ConfigDialog::ConfigDialog(QWidget* parent) : QDialog(parent) {
     // Add the formlayout to a formcontainer.
     // Add the formcontainer to a scrollarea.
     QWidget* advancedFormContainer = new QWidget(this);
-    mAdvancedForm->setFormAlignment(Qt::AlignCenter);
-    advancedFormContainer->setLayout(mAdvancedForm);
+    QHBoxLayout* advancedContainerLayout = new QHBoxLayout(
+        advancedFormContainer);
+    advancedContainerLayout->addStretch();
+    advancedContainerLayout->addLayout(mAdvancedForm);
+    advancedContainerLayout->addStretch();
 
     QScrollArea* advancedScrollArea = new QScrollArea(this);
     advancedScrollArea->setWidgetResizable(true);

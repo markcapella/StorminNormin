@@ -14,7 +14,7 @@ set(APP_NAME "StorminNormin")
 set(APP_DESC "A falling drifting stormy field that")
 set(APP_DESC "${APP_DESC} mesmerizes on your desktop.")
 
-set(APP_VERSION "26.10.28")
+set(APP_VERSION "26.11.17")
 set(APP_VERSION_MINOR "00")
 
 set(APP_AUTHOR "Mark James Capella")
@@ -184,7 +184,7 @@ set(WIDGET_SOURCES
     PinButton.cpp QuitButton.cpp MoveButton.cpp SizeButton.cpp
     ConfigDialog.cpp ColorButton.cpp AboutDialog.cpp ConfigButton.cpp
     SettingsHelper.cpp RecentsHelper.cpp DisplayHelper.cpp XHelper.cpp
-    TranslationHelper.cpp
+    TranslationHelper.cpp OpenboxHelper.cpp
     StickyWindow.cpp StickyWidgetIII.cpp
 )
 
